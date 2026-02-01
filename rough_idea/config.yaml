@@ -1,0 +1,11 @@
+paths:
+  guidelinescsv_file: "dataset/SecGuide.csv"
+  persist_dir: "chromaDB"
+  code_output_dir: "output/"
+  prompt_dataset_file: "dataset/SALLM.jsonl"
+  prompt_file_dir: "output"
+models:
+  embedding_model: "models/text-embedding-004"
+  completion_model: "models/gemini-2.0-flash"
+misc:
+  prompt_id_prefix: "rci_rag_"

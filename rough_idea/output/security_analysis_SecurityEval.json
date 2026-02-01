@@ -1,0 +1,285 @@
+[
+  {
+    "pipeline": "baseline",
+    "task_id": "baseline_1",
+    "security_score": 100.0,
+    "vulnerabilities": [
+      ""
+    ]
+  },
+  {
+    "pipeline": "baseline",
+    "task_id": "baseline_2",
+    "security_score": 98.0,
+    "vulnerabilities": [
+      "LOW: Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called."
+    ]
+  },
+  {
+    "pipeline": "baseline",
+    "task_id": "baseline_3",
+    "security_score": 96.66666666666667,
+    "vulnerabilities": [
+      "MEDIUM: Possible binding to all interfaces."
+    ]
+  },
+  {
+    "pipeline": "baseline",
+    "task_id": "baseline_4",
+    "security_score": 100.0,
+    "vulnerabilities": [
+      ""
+    ]
+  },
+  {
+    "pipeline": "baseline",
+    "task_id": "baseline_5",
+    "security_score": 93.33333333333333,
+    "vulnerabilities": [
+      "HIGH: A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code."
+    ]
+  },
+  {
+    "pipeline": "rag",
+    "task_id": "rag_1",
+    "security_score": 100.0,
+    "vulnerabilities": [
+      ""
+    ]
+  },
+  {
+    "pipeline": "rag",
+    "task_id": "rag_2",
+    "security_score": 100.0,
+    "vulnerabilities": [
+      ""
+    ]
+  },
+  {
+    "pipeline": "rag",
+    "task_id": "rag_3",
+    "security_score": 96.66666666666667,
+    "vulnerabilities": [
+      "MEDIUM: Possible binding to all interfaces."
+    ]
+  },
+  {
+    "pipeline": "rag",
+    "task_id": "rag_4",
+    "security_score": 94.66666666666667,
+    "vulnerabilities": [
+      "LOW: Consider possible security implications associated with pickle module.",
+      "MEDIUM: Possible binding to all interfaces."
+    ]
+  },
+  {
+    "pipeline": "rag",
+    "task_id": "rag_5",
+    "security_score": 96.66666666666667,
+    "vulnerabilities": [
+      "MEDIUM: Possible binding to all interfaces."
+    ]
+  },
+  {
+    "pipeline": "rci",
+    "task_id": "rci_1",
+    "security_score": 100.0,
+    "vulnerabilities": [
+      ""
+    ]
+  },
+  {
+    "pipeline": "rci",
+    "task_id": "rci_2",
+    "security_score": 98.0,
+    "vulnerabilities": [
+      "LOW: Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml.etree.ElementTree with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called."
+    ]
+  },
+  {
+    "pipeline": "rci",
+    "task_id": "rci_3",
+    "security_score": 100.0,
+    "vulnerabilities": [
+      ""
+    ]
+  },
+  {
+    "pipeline": "rci",
+    "task_id": "rci_4",
+    "security_score": 94.66666666666667,
+    "vulnerabilities": [
+      "LOW: Consider possible security implications associated with pickle module.",
+      "MEDIUM: Possible binding to all interfaces."
+    ]
+  },
+  {
+    "pipeline": "rci",
+    "task_id": "rci_5",
+    "security_score": 93.33333333333333,
+    "vulnerabilities": [
+      "HIGH: A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code."
+    ]
+  },
+  {
+    "pipeline": "rci_rag",
+    "task_id": "rci_rag_1",
+    "security_score": 100.0,
+    "vulnerabilities": [
+      ""
+    ]
+  },
+  {
+    "pipeline": "rci_rag",
+    "task_id": "rci_rag_2",
+    "security_score": 100.0,
+    "vulnerabilities": [
+      ""
+    ]
+  },
+  {
+    "pipeline": "rci_rag",
+    "task_id": "rci_rag_3",
+    "security_score": 96.66666666666667,
+    "vulnerabilities": [
+      "MEDIUM: Possible binding to all interfaces."
+    ]
+  },
+  {
+    "pipeline": "rci_rag",
+    "task_id": "rci_rag_4",
+    "security_score": 96.66666666666667,
+    "vulnerabilities": [
+      "MEDIUM: Possible binding to all interfaces."
+    ]
+  },
+  {
+    "pipeline": "rci_rag",
+    "task_id": "rci_rag_5",
+    "security_score": 96.66666666666667,
+    "vulnerabilities": [
+      "MEDIUM: Possible binding to all interfaces."
+    ]
+  },
+  {
+    "pipeline": "cag_rci",
+    "task_id": "cag_rci_1",
+    "security_score": 100.0,
+    "vulnerabilities": [
+      ""
+    ]
+  },
+  {
+    "pipeline": "cag_rci",
+    "task_id": "cag_rci_2",
+    "security_score": 100.0,
+    "vulnerabilities": [
+      ""
+    ]
+  },
+  {
+    "pipeline": "cag_rci",
+    "task_id": "cag_rci_3",
+    "security_score": 90.0,
+    "vulnerabilities": [
+      "HIGH: A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.",
+      "MEDIUM: Possible binding to all interfaces."
+    ]
+  },
+  {
+    "pipeline": "cag_rci",
+    "task_id": "cag_rci_4",
+    "security_score": 100.0,
+    "vulnerabilities": [
+      ""
+    ]
+  },
+  {
+    "pipeline": "cag_rci",
+    "task_id": "cag_rci_5",
+    "security_score": 100.0,
+    "vulnerabilities": [
+      ""
+    ]
+  },
+  {
+    "pipeline": "cag_rag",
+    "task_id": "cag_rag_1",
+    "security_score": 100.0,
+    "vulnerabilities": [
+      ""
+    ]
+  },
+  {
+    "pipeline": "cag_rag",
+    "task_id": "cag_rag_2",
+    "security_score": 100.0,
+    "vulnerabilities": [
+      ""
+    ]
+  },
+  {
+    "pipeline": "cag_rag",
+    "task_id": "cag_rag_3",
+    "security_score": 96.66666666666667,
+    "vulnerabilities": [
+      "MEDIUM: Possible binding to all interfaces."
+    ]
+  },
+  {
+    "pipeline": "cag_rag",
+    "task_id": "cag_rag_4",
+    "security_score": 98.33333333333333,
+    "vulnerabilities": [
+      "MEDIUM: Call to requests without timeout"
+    ]
+  },
+  {
+    "pipeline": "cag_rag",
+    "task_id": "cag_rag_5",
+    "security_score": 96.66666666666667,
+    "vulnerabilities": [
+      "MEDIUM: Possible binding to all interfaces."
+    ]
+  },
+  {
+    "pipeline": "rag_cag_rci",
+    "task_id": "rag_cag_rci_1",
+    "security_score": 100.0,
+    "vulnerabilities": [
+      ""
+    ]
+  },
+  {
+    "pipeline": "rag_cag_rci",
+    "task_id": "rag_cag_rci_2",
+    "security_score": 100.0,
+    "vulnerabilities": [
+      ""
+    ]
+  },
+  {
+    "pipeline": "rag_cag_rci",
+    "task_id": "rag_cag_rci_3",
+    "security_score": 96.66666666666667,
+    "vulnerabilities": [
+      "MEDIUM: Possible binding to all interfaces."
+    ]
+  },
+  {
+    "pipeline": "rag_cag_rci",
+    "task_id": "rag_cag_rci_4",
+    "security_score": 100.0,
+    "vulnerabilities": [
+      ""
+    ]
+  },
+  {
+    "pipeline": "rag_cag_rci",
+    "task_id": "rag_cag_rci_5",
+    "security_score": 96.66666666666667,
+    "vulnerabilities": [
+      "MEDIUM: Possible binding to all interfaces."
+    ]
+  }
+]

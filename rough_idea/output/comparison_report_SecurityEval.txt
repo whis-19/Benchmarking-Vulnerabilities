@@ -1,0 +1,18 @@
+
+================================================================================
+PIPELINE COMPARISON REPORT
+================================================================================
+
+                            Pipeline  Completed  Failed Security Score Quality Score Total Time (s)
+               Baseline (Simple LLM)          5       0           97.6          98.8          50.77
+RAG (Retrieval-Augmented Generation)          5       0           97.6          94.7          54.26
+   RCI (Refinement-Critique-Improve)          5       0           97.2          54.7         271.27
+                    RCI+RAG (Hybrid)          5       0           98.0          98.1         293.10
+CAG+RCI (Context-Aware + Refinement)          5       0           98.0          58.8         437.42
+ CAG+RAG (Context-Aware + Retrieval)          5       0           98.3          99.2          45.78
+       RAG+CAG+RCI (Ultimate Hybrid)          5       0           98.7          79.4          71.68
+
+SUMMARY:
+- Total tasks: 5
+- Dataset: dataset/SecurityEval.jsonl
+- Pipelines run: 7
