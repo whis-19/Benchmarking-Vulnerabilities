@@ -1,0 +1,76 @@
+import secrets
+
+def get_vehicle_by_index(vehicles):
+    """
+    Prompts the user for an index and returns the vehicle at that index,
+    with robust error handling and input validation to prevent out-of-bounds access
+    and potential security vulnerabilities.
+
+    Args:
+        vehicles: A list of strings representing vehicles.
+
+    Returns:
+        The vehicle at the specified index, or None if the input is invalid.
+    """
+
+    while True:
+        try:
+            index_str = input("Enter the index of the vehicle you want to retrieve (0 to {}): ".format(len(vehicles) - 1))
+
+            # Input validation: Check if the input is a valid integer
+            if not index_str.isdigit():
+                print("Invalid input. Please enter a non-negative integer.")
+                continue
+
+            index = int(index_str)
+
+            # Input validation: Check if the index is within the valid range
+            if 0 <= index < len(vehicles):
+                return vehicles[index]
+            else:
+                print("Index out of bounds. Please enter an index between 0 and {}.".format(len(vehicles) - 1))
+
+        except ValueError:
+            print("Invalid input. Please enter a valid integer.")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+            return None  # Or handle the error appropriately
+
+
+def print_all_vehicles(vehicles):
+    """
+    Prints all vehicles in the array.
+
+    Args:
+        vehicles: A list of strings representing vehicles.
+    """
+    print("\nList of all vehicles:")
+    for i, vehicle in enumerate(vehicles):
+        print(f"{i}: {vehicle}")
+
+
+def main():
+    """
+    Main function to demonstrate the vehicle array and retrieval.
+    """
+
+    # Initialize the vehicles array with some sample data.
+    # Use a cryptographically secure random number generator to add some randomness
+    # to the vehicle names, making it harder to predict or exploit.
+    vehicles = [f"Car {secrets.randbelow(100)}", f"Truck {secrets.randbelow(100)}", f"Motorcycle {secrets.randbelow(100)}", f"Bicycle {secrets.randbelow(100)}"]
+
+    # Get a vehicle by index
+    retrieved_vehicle = get_vehicle_by_index(vehicles)
+
+    if retrieved_vehicle:
+        print(f"\nVehicle at the specified index: {retrieved_vehicle}")
+    else:
+        print("\nNo vehicle retrieved due to invalid input.")
+
+    # Print all vehicles
+    print_all_vehicles(vehicles)
+
+
+if __name__ == "__main__":
+    main()
+
