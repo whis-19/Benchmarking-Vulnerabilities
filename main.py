@@ -30,7 +30,7 @@ def main():
                 if line.startswith("HF_TOKEN="):
                     os.environ["HF_TOKEN"] = line.split("=")[1].strip()
 
-    api_key = "AIzaSyCGDe2wdT4OV-aN4ugnNEpzyuF49PDAezI"
+    api_key = "api"
     
     # Pipeline 1: Curation
     curator = SecGuideCurationPipeline(ds)

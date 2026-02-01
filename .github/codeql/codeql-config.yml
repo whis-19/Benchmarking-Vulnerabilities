@@ -1,0 +1,9 @@
+name: "CodeQL Custom Config"
+
+# Focus the scan on your output folder
+paths:
+  - 'output'
+
+# Ignore other files if necessary (e.g., test scripts or data)
+paths-ignore:
+  - '**/tests/**'
