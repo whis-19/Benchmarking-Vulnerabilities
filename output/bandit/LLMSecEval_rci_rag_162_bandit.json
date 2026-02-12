@@ -1,0 +1,92 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-07T03:56:19Z",
+  "metrics": {
+    "/tmp/tmp9eorgdr3.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 107,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 107,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "81 \n82 def store_secure_credentials(filename=\"credentials.config\", username=\"myuser\", password=\"mypassword\"):\n83     \"\"\"\n84     Stores credentials securely (using hashing and salting) and encrypts the entire file.\n85 \n86     Args:\n87         filename (str): The name of the credentials file.\n88         username (str): The username.\n89         password (str): The password.\n90     \"\"\"\n91     try:\n92         salt = generate_salt()\n93         hashed_password = hash_password(password, salt)\n94 \n95         # Store the username, salt, and hashed password in a JSON format.\n96         config_data = json.dumps({\"username\": username, \"salt\": salt, \"hashed_password\": hashed_password})\n97 \n98         # Retrieve the encryption key (from a secure source!)\n99         key = os.environ.get(\"CONFIG_ENCRYPTION_KEY\")\n100         if not key:\n101             logging.error(\"Encryption key not found!\")\n102             return\n103 \n104         # Ensure the key is a bytes object\n105         key_bytes = key.encode('utf-8')  # Or another suitable encoding\n106 \n107         # Encrypt the config data\n108         encrypted_data = encrypt_config_data(config_data, key_bytes)\n109 \n110         # Write the encrypted data to the file\n111         with open(filename, \"wb\") as f:  # Open in binary write mode\n112             f.write(encrypted_data)\n113 \n114         # Restrict file permissions\n115         os.chmod(filename, stat.S_IRUSR | stat.S_IWUSR)\n116 \n117         logging.info(f\"Successfully stored secure credentials in {filename}.\")\n118 \n119     except Exception as e:\n120         logging.error(f\"Error storing secure credentials: {e}\")\n121 \n",
+      "col_offset": 0,
+      "end_col_offset": 63,
+      "filename": "/tmp/tmp9eorgdr3.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: 'mypassword'",
+      "line_number": 82,
+      "line_range": [
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b107_hardcoded_password_default.html",
+      "test_id": "B107",
+      "test_name": "hardcoded_password_default"
+    }
+  ]
+}

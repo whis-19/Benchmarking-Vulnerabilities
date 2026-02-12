@@ -1,0 +1,97 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-07T14:56:32Z",
+  "metrics": {
+    "/tmp/tmpcrigqz1w.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 3,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 1,
+      "SEVERITY.LOW": 2,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 106,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 3,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 1,
+      "SEVERITY.LOW": 2,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 106,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "14         \"salt\": os.urandom(16),  # Generate a random salt\n15         \"hashed_password\": None  # Will be set after hashing\n16     }\n17 }\n18 \n19 # Hash the admin password upon startup\n",
+      "col_offset": 8,
+      "end_col_offset": 25,
+      "filename": "/tmp/tmpcrigqz1w.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: 'None'",
+      "line_number": 15,
+      "line_range": [
+        13,
+        14,
+        15,
+        16
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    },
+    {
+      "code": "30 # Set the initial admin password (replace with a secure method for initial setup)\n31 initial_admin_password = \"P@$$wOrd\"  # Replace with a strong, randomly generated password\n32 users[\"admin\"][\"hashed_password\"] = hash_password(initial_admin_password, users[\"admin\"][\"salt\"])\n",
+      "col_offset": 25,
+      "end_col_offset": 35,
+      "filename": "/tmp/tmpcrigqz1w.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: 'P@$$wOrd'",
+      "line_number": 31,
+      "line_range": [
+        31
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    },
+    {
+      "code": "148 if __name__ == '__main__':\n149     app.run(debug=True, ssl_context='adhoc') # Enable SSL for local development\n",
+      "col_offset": 4,
+      "end_col_offset": 44,
+      "filename": "/tmp/tmpcrigqz1w.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 94,
+        "link": "https://cwe.mitre.org/data/definitions/94.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.",
+      "line_number": 149,
+      "line_range": [
+        149
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b201_flask_debug_true.html",
+      "test_id": "B201",
+      "test_name": "flask_debug_true"
+    }
+  ]
+}

@@ -1,0 +1,634 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-07T10:38:37Z",
+  "metrics": {
+    "/tmp/tmplebt8sgx.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 30,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 30,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 174,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 30,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 30,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 174,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "11 ARCHIVE_PATH = 'archive.tar.gz'\n12 EXTRACT_DIR = '/tmp/unpack'\n13 ALLOWED_EXTENSIONS = ['.txt', '.pdf', '.jpg', '.png', '.csv']\n",
+      "col_offset": 14,
+      "end_col_offset": 27,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 12,
+      "line_range": [
+        12
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "14 ALLOWED_MIME_TYPES = ['text/plain', 'image/jpeg', 'image/png', 'application/pdf', 'text/csv']  # Example MIME types\n15 ALLOWED_LOCATIONS = ['/tmp/unpack/']\n16 DESIRED_FILE_PERMISSIONS = 0o640\n",
+      "col_offset": 21,
+      "end_col_offset": 35,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 15,
+      "line_range": [
+        15
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "170                 # Create a dummy file\n171                 with open(\"/tmp/test.txt\", \"w\") as f:\n172                     f.write(\"This is a test file.\")\n",
+      "col_offset": 26,
+      "end_col_offset": 41,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 171,
+      "line_range": [
+        171
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "172                     f.write(\"This is a test file.\")\n173                 tar.add(\"/tmp/test.txt\", arcname=\"test.txt\")\n174                 os.remove(\"/tmp/test.txt\")\n",
+      "col_offset": 24,
+      "end_col_offset": 39,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 173,
+      "line_range": [
+        173
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "173                 tar.add(\"/tmp/test.txt\", arcname=\"test.txt\")\n174                 os.remove(\"/tmp/test.txt\")\n175 \n",
+      "col_offset": 26,
+      "end_col_offset": 41,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 174,
+      "line_range": [
+        174
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "176                 # Create a file with a disallowed extension\n177                 with open(\"/tmp/test.exe\", \"w\") as f:\n178                     f.write(\"This is a test executable.\")\n",
+      "col_offset": 26,
+      "end_col_offset": 41,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 177,
+      "line_range": [
+        177
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "178                     f.write(\"This is a test executable.\")\n179                 tar.add(\"/tmp/test.exe\", arcname=\"test.exe\")\n180                 os.remove(\"/tmp/test.exe\")\n",
+      "col_offset": 24,
+      "end_col_offset": 39,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 179,
+      "line_range": [
+        179
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "179                 tar.add(\"/tmp/test.exe\", arcname=\"test.exe\")\n180                 os.remove(\"/tmp/test.exe\")\n181 \n",
+      "col_offset": 26,
+      "end_col_offset": 41,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 180,
+      "line_range": [
+        180
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "182                 # Create a file with a double extension\n183                 with open(\"/tmp/test.txt.exe\", \"w\") as f:\n184                     f.write(\"This is a test executable with a double extension.\")\n",
+      "col_offset": 26,
+      "end_col_offset": 45,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 183,
+      "line_range": [
+        183
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "184                     f.write(\"This is a test executable with a double extension.\")\n185                 tar.add(\"/tmp/test.txt.exe\", arcname=\"test.txt.exe\")\n186                 os.remove(\"/tmp/test.txt.exe\")\n",
+      "col_offset": 24,
+      "end_col_offset": 43,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 185,
+      "line_range": [
+        185
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "185                 tar.add(\"/tmp/test.txt.exe\", arcname=\"test.txt.exe\")\n186                 os.remove(\"/tmp/test.txt.exe\")\n187 \n",
+      "col_offset": 26,
+      "end_col_offset": 45,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 186,
+      "line_range": [
+        186
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "188                 # Create a file with a path traversal attempt\n189                 with open(\"/tmp/../../test_traversal.txt\", \"w\") as f:\n190                     f.write(\"This is a test traversal file.\")\n",
+      "col_offset": 26,
+      "end_col_offset": 57,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 189,
+      "line_range": [
+        189
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "190                     f.write(\"This is a test traversal file.\")\n191                 tar.add(\"/tmp/../../test_traversal.txt\", arcname=\"../test_traversal.txt\")\n192                 os.remove(\"/tmp/../../test_traversal.txt\")\n",
+      "col_offset": 24,
+      "end_col_offset": 55,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 191,
+      "line_range": [
+        191
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "191                 tar.add(\"/tmp/../../test_traversal.txt\", arcname=\"../test_traversal.txt\")\n192                 os.remove(\"/tmp/../../test_traversal.txt\")\n193 \n",
+      "col_offset": 26,
+      "end_col_offset": 57,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 192,
+      "line_range": [
+        192
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "194                 # Create a file in an allowed location\n195                 os.makedirs(\"/tmp/unpack/allowed_dir\", exist_ok=True)\n196                 with open(\"/tmp/unpack/allowed_dir/test_allowed.txt\", \"w\") as f:\n",
+      "col_offset": 28,
+      "end_col_offset": 53,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 195,
+      "line_range": [
+        195
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "195                 os.makedirs(\"/tmp/unpack/allowed_dir\", exist_ok=True)\n196                 with open(\"/tmp/unpack/allowed_dir/test_allowed.txt\", \"w\") as f:\n197                     f.write(\"This is a test allowed file.\")\n",
+      "col_offset": 26,
+      "end_col_offset": 68,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 196,
+      "line_range": [
+        196
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "197                     f.write(\"This is a test allowed file.\")\n198                 tar.add(\"/tmp/unpack/allowed_dir/test_allowed.txt\", arcname=\"allowed_dir/test_allowed.txt\")\n199                 os.remove(\"/tmp/unpack/allowed_dir/test_allowed.txt\")\n",
+      "col_offset": 24,
+      "end_col_offset": 66,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 198,
+      "line_range": [
+        198
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "198                 tar.add(\"/tmp/unpack/allowed_dir/test_allowed.txt\", arcname=\"allowed_dir/test_allowed.txt\")\n199                 os.remove(\"/tmp/unpack/allowed_dir/test_allowed.txt\")\n200                 os.rmdir(\"/tmp/unpack/allowed_dir\")\n",
+      "col_offset": 26,
+      "end_col_offset": 68,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 199,
+      "line_range": [
+        199
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "199                 os.remove(\"/tmp/unpack/allowed_dir/test_allowed.txt\")\n200                 os.rmdir(\"/tmp/unpack/allowed_dir\")\n201 \n",
+      "col_offset": 25,
+      "end_col_offset": 50,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 200,
+      "line_range": [
+        200
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "202                 # Create a symbolic link\n203                 os.symlink(\"/tmp/test.txt\", \"/tmp/test_symlink\")\n204                 tar.add(\"/tmp/test_symlink\", arcname=\"test_symlink\")\n",
+      "col_offset": 27,
+      "end_col_offset": 42,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 203,
+      "line_range": [
+        203
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "202                 # Create a symbolic link\n203                 os.symlink(\"/tmp/test.txt\", \"/tmp/test_symlink\")\n204                 tar.add(\"/tmp/test_symlink\", arcname=\"test_symlink\")\n",
+      "col_offset": 44,
+      "end_col_offset": 63,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 203,
+      "line_range": [
+        203
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "203                 os.symlink(\"/tmp/test.txt\", \"/tmp/test_symlink\")\n204                 tar.add(\"/tmp/test_symlink\", arcname=\"test_symlink\")\n205                 os.remove(\"/tmp/test_symlink\")\n",
+      "col_offset": 24,
+      "end_col_offset": 43,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 204,
+      "line_range": [
+        204
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "204                 tar.add(\"/tmp/test_symlink\", arcname=\"test_symlink\")\n205                 os.remove(\"/tmp/test_symlink\")\n206 \n",
+      "col_offset": 26,
+      "end_col_offset": 45,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 205,
+      "line_range": [
+        205
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "207                 # Create a hard link\n208                 os.link(\"/tmp/test.txt\", \"/tmp/test_hardlink\")\n209                 tar.add(\"/tmp/test_hardlink\", arcname=\"test_hardlink\")\n",
+      "col_offset": 24,
+      "end_col_offset": 39,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 208,
+      "line_range": [
+        208
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "207                 # Create a hard link\n208                 os.link(\"/tmp/test.txt\", \"/tmp/test_hardlink\")\n209                 tar.add(\"/tmp/test_hardlink\", arcname=\"test_hardlink\")\n",
+      "col_offset": 41,
+      "end_col_offset": 61,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 208,
+      "line_range": [
+        208
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "208                 os.link(\"/tmp/test.txt\", \"/tmp/test_hardlink\")\n209                 tar.add(\"/tmp/test_hardlink\", arcname=\"test_hardlink\")\n210                 os.remove(\"/tmp/test_hardlink\")\n",
+      "col_offset": 24,
+      "end_col_offset": 44,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 209,
+      "line_range": [
+        209
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "209                 tar.add(\"/tmp/test_hardlink\", arcname=\"test_hardlink\")\n210                 os.remove(\"/tmp/test_hardlink\")\n211 \n",
+      "col_offset": 26,
+      "end_col_offset": 46,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 210,
+      "line_range": [
+        210
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "212                 # Create a file that claims to be a text file but is actually an executable\n213                 with open(\"/tmp/test.txt\", \"wb\") as f:\n214                     f.write(b\"\\x7fELF\")  # ELF magic number (executable)\n",
+      "col_offset": 26,
+      "end_col_offset": 41,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 213,
+      "line_range": [
+        213
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "214                     f.write(b\"\\x7fELF\")  # ELF magic number (executable)\n215                 tar.add(\"/tmp/test.txt\", arcname=\"test.txt\")\n216                 os.remove(\"/tmp/test.txt\")\n",
+      "col_offset": 24,
+      "end_col_offset": 39,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 215,
+      "line_range": [
+        215
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "215                 tar.add(\"/tmp/test.txt\", arcname=\"test.txt\")\n216                 os.remove(\"/tmp/test.txt\")\n217 \n",
+      "col_offset": 26,
+      "end_col_offset": 41,
+      "filename": "/tmp/tmplebt8sgx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 216,
+      "line_range": [
+        216
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    }
+  ]
+}

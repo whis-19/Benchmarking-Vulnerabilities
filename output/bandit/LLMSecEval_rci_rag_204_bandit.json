@@ -1,0 +1,134 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-07T04:40:22Z",
+  "metrics": {
+    "/tmp/tmpz9vtka9u.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 5,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 5,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 225,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 5,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 5,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 225,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "262     # Ensure the extraction directory exists with proper permissions\n263     ensure_directory_exists(\"/tmp/unpack\")\n264     ensure_directory_exists(\"/tmp/safe_dir\")\n",
+      "col_offset": 28,
+      "end_col_offset": 41,
+      "filename": "/tmp/tmpz9vtka9u.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 263,
+      "line_range": [
+        263
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "263     ensure_directory_exists(\"/tmp/unpack\")\n264     ensure_directory_exists(\"/tmp/safe_dir\")\n265 \n",
+      "col_offset": 28,
+      "end_col_offset": 43,
+      "filename": "/tmp/tmpz9vtka9u.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 264,
+      "line_range": [
+        264
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "267     try:\n268         extract_tarfile_safely(\"example.tar.gz\", \"/tmp/unpack\", max_size_bytes=1024 * 1024 * 100, max_files=1000)  # 100MB limit, 1000 files\n269         print(\"Tarfile extracted successfully.\")\n",
+      "col_offset": 49,
+      "end_col_offset": 62,
+      "filename": "/tmp/tmpz9vtka9u.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 268,
+      "line_range": [
+        268
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "278     try:\n279         extract_zipfile_safely(\"example.zip\", \"/tmp/unpack\", max_size_bytes=1024 * 1024 * 100, max_files=1000)  # 100MB limit, 1000 files\n280         print(\"Zipfile extracted successfully.\")\n",
+      "col_offset": 46,
+      "end_col_offset": 59,
+      "filename": "/tmp/tmpz9vtka9u.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 279,
+      "line_range": [
+        279
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "289     try:\n290         secure_file_creation(\"my_file.txt\", \"This is some content.\", \"/tmp/safe_dir\") # Replace with your desired filename, content, and safe directory\n291         print(\"File created successfully.\")\n",
+      "col_offset": 69,
+      "end_col_offset": 84,
+      "filename": "/tmp/tmpz9vtka9u.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 290,
+      "line_range": [
+        290
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-07T16:57:35Z",
+  "metrics": {
+    "/tmp/tmp126y1e3w.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 6,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 6,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "2     \"ls\": \"/bin/ls\",\n3     \"pwd\": \"/bin/pwd\",\n4     \"head\": \"/usr/bin/head\",  # Example: Allow viewing the beginning of a file\n5     \"tail\": \"/usr/bin/tail\"   # Example: Allow viewing the end of a file\n6 }\n",
+      "col_offset": 4,
+      "end_col_offset": 9,
+      "filename": "/tmp/tmp126y1e3w.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: '/bin/pwd'",
+      "line_number": 3,
+      "line_range": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    }
+  ]
+}

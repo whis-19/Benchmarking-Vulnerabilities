@@ -1,86 +1,60 @@
 import tempfile
 import os
 import secrets
-import hashlib
 import logging
-import shutil  # For secure file deletion
+import bleach  # For HTML sanitization
+import atexit
 
 from flask import Flask, request, jsonify
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-import bleach  # For HTML sanitization (install with pip install bleach)
-
-# Import your authentication library (e.g., Flask-Login)
-# from flask_login import login_required, current_user
-
-# Database imports (example using SQLAlchemy and SQLite)
-from sqlalchemy import create_engine, Column, Integer, String, DateTime
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-import datetime
 
 app = Flask(__name__)
 
-# Configure logging (example with file rotation)
+# Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-log_file_handler = logging.handlers.RotatingFileHandler('app.log', maxBytes=1024*1024, backupCount=5) # 1MB, 5 backups
-logging.getLogger('').addHandler(log_file_handler)
 
-
-# Rate limiting
+# Configure rate limiting
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["200 per day, 50 per hour"]  # Example: 200 requests per day, 50 per hour
+    default_limits=["200 per day", "50 per hour"]  # Adjust limits as needed
 )
 
-# Secret key for session management (if you implement authentication)
-app.config['SECRET_KEY'] = secrets.token_hex(32)
+temp_files = set()  # Keep track of created temp files
 
-# Database configuration (SQLite example)
-DATABASE_URL = "sqlite:///./file_hashes.db"  # Use a proper database in production
-engine = create_engine(DATABASE_URL)
-Base = declarative_base()
+def cleanup_temp_files():
+    for file_path in temp_files:
+        try:
+            os.remove(file_path)
+            logging.info(f"Cleaned up temporary file: {file_path}")
+        except Exception as e:
+            logging.error(f"Error cleaning up temporary file {file_path}: {e}")
 
-class FileHash(Base):
-    __tablename__ = "file_hashes"
-
-    id = Column(Integer, primary_key=True)
-    file_hash = Column(String, unique=True, nullable=False)
-    file_path = Column(String, nullable=False)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
-    # Add user_id column when authentication is implemented
-    # user_id = Column(Integer, ForeignKey('users.id'))
-
-Base.metadata.create_all(engine)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-
-# Temporary file directory
-TEMP_DIR = "temp_files"
-os.makedirs(TEMP_DIR, exist_ok=True)  # Create if it doesn't exist
-
-def generate_file_hash(file_path):
-    """Generates a SHA-256 hash of the file content."""
-    hasher = hashlib.sha256()
-    with open(file_path, 'rb') as afile:
-        buf = afile.read()
-        hasher.update(buf)
-    return hasher.hexdigest()
+atexit.register(cleanup_temp_files)
 
 
 @app.route('/write_temp', methods=['POST'])
-@limiter.limit("10/minute")  # Example: 10 requests per minute
-#@login_required  # Uncomment after implementing authentication
+@limiter.limit("10/minute")  # Apply rate limit to this endpoint
 def write_results():
     """
     Get the results from the request using 'results' as the key.
     Create a temporary file with UTF-8 encoding,
     write the unicode string results to it,
-    and return a hash of the file content instead of the path.
+    and return its path.
+
+    Security Considerations:
+    - Input validation:  Sanitizes the input 'results' to prevent injection attacks.
+    - Secure temporary file creation: Uses `tempfile.mkstemp` with a secure prefix and suffix to prevent predictable filenames.
+    - File permissions: Sets restrictive file permissions to prevent unauthorized access.
+    - Error handling:  Includes error handling to prevent information leakage and ensure graceful failure.
+    - Content-Type validation:  Ensures the request is sending data in a supported format (e.g., application/json).
+    - Rate limiting:  Implements rate limiting to prevent abuse.
+    - Logging:  Log relevant events (e.g., errors, successful file writes) for auditing and debugging.
+    - Temporary file cleanup on application exit
     """
     if request.content_type != 'application/json':
-        logging.warning(f"Invalid Content-Type from {request.remote_addr}")
+        logging.warning("Invalid Content-Type received.")
         return jsonify({'error': 'Invalid Content-Type.  Must be application/json'}), 400
 
     try:
@@ -88,136 +62,80 @@ def write_results():
         results = data.get('results')
 
         if not isinstance(results, str):
-            logging.warning(f"Invalid results type from {request.remote_addr}")
+            logging.warning("Invalid input: Results must be a string.")
             return jsonify({'error': 'Results must be a string'}), 400
 
         # Input validation:  Sanitize the input to prevent injection attacks.
-        #  REPLACE WITH CONTEXT-AWARE SANITIZATION.  THIS IS CRITICAL.
-        # Example using Bleach (install with pip install bleach)
-        results = bleach.clean(results, tags=['p', 'b', 'i', 'a', 'br'], attributes={'a': ['href', 'title']}, strip=True)
+        # This is a basic example; adapt to your specific needs.
+        # **IMPORTANT:  Adapt this to your specific needs!**
+        # results = results.replace("<", "&lt;").replace(">", "&gt;")  # Prevent HTML injection
+        # Example: Whitelist allowed characters (alphanumeric and spaces)
+        # results = ''.join(c for c in results if c.isalnum() or c.isspace())
 
-        # Length Limit
-        if len(results) > 10240:  # Example: Limit to 10KB
-            logging.warning(f"Results too long from {request.remote_addr}")
-            return jsonify({'error': 'Results too long (max 10KB)'}), 400
+        # Input Sanitization (Example using bleach for HTML)
+        sanitized_results = bleach.clean(results)  # Use bleach for HTML sanitization
 
 
         # Secure temporary file creation
+        # Generate a random prefix and suffix for the temporary file
         random_prefix = secrets.token_hex(8)
         random_suffix = secrets.token_hex(8)
 
-        # Create a secure temporary file with a unique name
+        fd = None
+        temp_file_path = None
         try:
-            fd, temp_file_path = tempfile.mkstemp(prefix=f"{random_prefix}_", suffix=f"_{random_suffix}.txt", dir=TEMP_DIR, text=True)
-            os.chmod(temp_file_path, 0o600)  # Set permissions immediately
-        except OSError as e:
-            logging.error(f"Error creating temporary file: {e}")
-            return jsonify({'error': 'Failed to create temporary file'}), 500
+            # Create a secure temporary file with a unique name
+            temp_dir = os.environ.get('TEMP_DIR', None)  # Get from environment variable
+            fd, temp_file_path = tempfile.mkstemp(prefix=f"{random_prefix}_", suffix=f"_{random_suffix}.txt", dir=temp_dir, text=True)  # text=True opens in text mode
+            temp_files.add(temp_file_path) # Add to the set after successful creation
 
 
-        try:
-            # Write the results to the temporary file with UTF-8 encoding
-            with os.fdopen(fd, 'w', encoding='utf-8') as f:  # Use fd directly
-                f.write(results)
-
-            # Generate a hash of the file content
-            file_hash = generate_file_hash(temp_file_path)
-
-            # Store the file hash and path in the database
-            db = SessionLocal()
             try:
-                db_file_hash = FileHash(file_hash=file_hash, file_path=temp_file_path)
-                db.add(db_file_hash)
-                db.commit()
-            except Exception as db_e:
-                db.rollback()
-                logging.error(f"Error writing to database: {db_e}")
-                return jsonify({'error': 'Failed to write to database'}), 500
-            finally:
-                db.close()
+                # Write the results to the temporary file with UTF-8 encoding
+                with open(temp_file_path, 'w', encoding='utf-8') as f:
+                    f.write(sanitized_results)
 
+                # Set restrictive file permissions (read/write for owner only)
+                os.chmod(temp_file_path, 0o600)
 
-            # Log success
-            logging.info(f"File written successfully to {temp_file_path} from {request.remote_addr}, hash: {file_hash}")
+                logging.info(f"Successfully wrote to temporary file: {temp_file_path}")
+                # Return the path to the temporary file
+                return jsonify({'file_path': temp_file_path}), 200
 
-            # Return the hash of the file content instead of the file path
-            return jsonify({'file_hash': file_hash}), 200
+            except Exception as e:
+                logging.error(f"Error writing to temporary file: {str(e)}")
+                # Handle file writing errors
+                if fd is not None:
+                    os.close(fd)  # Close the file descriptor
+                if temp_file_path is not None:
+                    os.remove(temp_file_path)  # Remove the temporary file
+                    if temp_file_path in temp_files:
+                        temp_files.remove(temp_file_path)
+                return jsonify({'error': 'An error occurred while processing your request'}), 500
 
         except Exception as e:
-            logging.error(f"Error writing to temporary file from {request.remote_addr}: {str(e)}")
-            return jsonify({'error': f'Error writing to temporary file: {str(e)}'}), 500
+            logging.error(f"Error creating temporary file: {str(e)}")
+            return jsonify({'error': 'An error occurred while processing your request'}), 500
 
         finally:
-            try:
-                os.close(fd) # Ensure file descriptor is closed
-                # Use shutil.rmtree for secure deletion (handles permissions better)
-                #shutil.rmtree(os.path.dirname(temp_file_path), ignore_errors=True) # Delete the directory and its contents
-                #os.remove(temp_file_path)  # Remove the temporary file
-            except Exception as e:
-                logging.error(f"Error cleaning up temporary file: {str(e)}")
+            if fd is not None:
+                try:
+                    os.close(fd) # Ensure the file descriptor is always closed
+                except Exception as e:
+                    logging.error(f"Error closing file descriptor: {str(e)}")
+            if temp_file_path is not None:
+                try:
+                    os.remove(temp_file_path)
+                    if temp_file_path in temp_files:
+                        temp_files.remove(temp_file_path)
+                except Exception as e:
+                    logging.error(f"Error removing temporary file: {str(e)}")
 
 
     except Exception as e:
-        logging.error(f"Error processing request from {request.remote_addr}: {str(e)}")
-        return jsonify({'error': f'Error processing request: {str(e)}'}), 400
-
-
-# Example endpoint to retrieve the file content using the hash (requires authentication)
-@app.route('/get_file_content/<file_hash>', methods=['GET'])
-#@login_required
-def get_file_content(file_hash):
-    """Retrieves the content of a file based on its hash."""
-    db = SessionLocal()
-    try:
-        file_hash_obj = db.query(FileHash).filter(FileHash.file_hash == file_hash).first()
-        if not file_hash_obj:
-            return jsonify({'error': 'File not found'}), 404
-
-        file_path = file_hash_obj.file_path
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-            return jsonify({'content': content}), 200
-        except Exception as e:
-            logging.error(f"Error reading file {file_path}: {str(e)}")
-            return jsonify({'error': f'Error reading file: {str(e)}'}), 500
-    finally:
-        db.close()
-
-
-# Background task for deleting old temporary files (example using APScheduler)
-from apscheduler.schedulers.background import BackgroundScheduler
-
-def cleanup_old_files():
-    """Deletes temporary files older than a certain age."""
-    logging.info("Running cleanup task...")
-    db = SessionLocal()
-    try:
-        cutoff_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)  # Delete files older than 1 day
-        old_files = db.query(FileHash).filter(FileHash.created_at < cutoff_date).all()
-
-        for file_hash_obj in old_files:
-            file_path = file_hash_obj.file_path
-            try:
-                os.remove(file_path)
-                logging.info(f"Deleted old file: {file_path}")
-            except Exception as e:
-                logging.error(f"Error deleting file {file_path}: {str(e)}")
-
-            db.delete(file_hash_obj)
-
-        db.commit()
-    except Exception as e:
-        db.rollback()
-        logging.error(f"Error during cleanup: {str(e)}")
-    finally:
-        db.close()
-    logging.info("Cleanup task completed.")
-
-
-scheduler = BackgroundScheduler()
-scheduler.add_job(cleanup_old_files, 'interval', days=1)  # Run cleanup daily
-scheduler.start()
+        logging.error(f"Error processing request: {str(e)}")
+        # Handle JSON parsing errors or other unexpected errors
+        return jsonify({'error': 'An error occurred while processing your request'}), 400
 
 
 if __name__ == '__main__':

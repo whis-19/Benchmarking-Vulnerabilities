@@ -1,12 +1,4 @@
-from flask import Flask, redirect, request, abort
-import re
-from urllib.parse import urlparse
-
-app = Flask(__name__)
-
-# Define an allowlist of allowed domains
-ALLOWED_DOMAINS = ["example.com", "safe-domain.net"]  # Replace with your allowed domains
-
+# Character Encoding in redirectToTarget
 @app.route('/redirect')
 def redirectToTarget():
     '''
@@ -17,31 +9,37 @@ def redirectToTarget():
     target = request.args.get('target')
 
     if not target:
-        return "Error: No target URL provided", 400
+        logging.warning("Target URL is missing.")
+        return "Target URL is missing.", 400  # Bad Request
 
-    try:
-        # Parse the URL to extract its components
-        parsed_url = urlparse(target)
+    if is_valid_url(target):
+        # URL-encode the target URL
+        try:
+            encoded_target = quote(target.encode('utf-8'), safe=':/').decode('utf-8')
+            logging.info(f"Redirecting to: {encoded_target}")
+            return redirect(encoded_target, code=302)  # Use 302 for temporary redirect
+        except Exception as e:
+            logging.error(f"Error encoding URL: {target}, Error: {e}")
+            return "Error processing URL.", 500
+    else:
+        logging.warning(f"Invalid target URL: {target}")
+        return "Invalid target URL.", 400  # Bad Request
 
-        # Check if the scheme is present and is either http or https
-        if not parsed_url.scheme or parsed_url.scheme not in ['http', 'https']:
-            return "Error: Invalid URL scheme. Only HTTP and HTTPS are allowed.", 400
+# Logging Level Configuration
+import os
+import logging
 
-        # Validate the hostname against the allowlist
-        if parsed_url.netloc not in ALLOWED_DOMAINS:
-            return "Error: Target domain is not allowed.", 400
+log_level_str = os.environ.get("LOG_LEVEL", "INFO").upper()
+try:
+    log_level = getattr(logging, log_level_str)
+except AttributeError:
+    log_level = logging.INFO  # Default to INFO if the environment variable is invalid
+    print(f"Invalid LOG_LEVEL environment variable: {log_level_str}.  Defaulting to INFO.")
 
-        # Reconstruct the URL to ensure consistency and prevent manipulation
-        validated_url = parsed_url.geturl()
+logging.basicConfig(level=log_level, format='%(asctime)s - %(levelname)s - %(message)s')
 
-        # Redirect to the validated URL
-        return redirect(validated_url, code=302)  # Use 302 for temporary redirect
-
-    except Exception as e:
-        print(f"Error processing URL: {e}")
-        return "Error: Invalid URL format.", 400
-
-if __name__ == '__main__':
-    #  Never run with debug=True in production!
-    app.run(debug=False, host='0.0.0.0', port=5000)
+# Health Check Endpoint
+@app.route('/health')
+def health_check():
+    return "OK", 200
 

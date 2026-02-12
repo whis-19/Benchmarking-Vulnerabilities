@@ -1,0 +1,184 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-08T04:00:46Z",
+  "metrics": {
+    "/tmp/tmpo90_abps.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 6,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 6,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 386,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 6,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 6,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 386,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "389         config['Security'] = {\n390             'ADMIN_PASSWORD_FILE': 'admin_password.txt',\n391             'TEMP_PASSWORD_EXPIRY': 60,\n392             'PASSWORD_HISTORY_LENGTH': 5,\n393             'LOGIN_ATTEMPTS_BEFORE_LOCK': 5,\n394             'ACCOUNT_LOCK_DURATION': 60,\n395             'DATABASE_FILE': 'security.db',\n396             'EMAIL_ENABLED': False\n397         }\n398         config['Email'] = {\n399             'EMAIL_HOST': '',\n",
+      "col_offset": 12,
+      "end_col_offset": 33,
+      "filename": "/tmp/tmpo90_abps.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: 'admin_password.txt'",
+      "line_number": 390,
+      "line_range": [
+        389,
+        390,
+        391,
+        392,
+        393,
+        394,
+        395,
+        396,
+        397
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    },
+    {
+      "code": "390             'ADMIN_PASSWORD_FILE': 'admin_password.txt',\n391             'TEMP_PASSWORD_EXPIRY': 60,\n392             'PASSWORD_HISTORY_LENGTH': 5,\n393             'LOGIN_ATTEMPTS_BEFORE_LOCK': 5,\n394             'ACCOUNT_LOCK_DURATION': 60,\n395             'DATABASE_FILE': 'security.db',\n396             'EMAIL_ENABLED': False\n397         }\n398         config['Email'] = {\n399             'EMAIL_HOST': '',\n400             'EMAIL_PORT': 587,\n",
+      "col_offset": 12,
+      "end_col_offset": 34,
+      "filename": "/tmp/tmpo90_abps.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: '60'",
+      "line_number": 391,
+      "line_range": [
+        389,
+        390,
+        391,
+        392,
+        393,
+        394,
+        395,
+        396,
+        397
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    },
+    {
+      "code": "391             'TEMP_PASSWORD_EXPIRY': 60,\n392             'PASSWORD_HISTORY_LENGTH': 5,\n393             'LOGIN_ATTEMPTS_BEFORE_LOCK': 5,\n394             'ACCOUNT_LOCK_DURATION': 60,\n395             'DATABASE_FILE': 'security.db',\n396             'EMAIL_ENABLED': False\n397         }\n398         config['Email'] = {\n399             'EMAIL_HOST': '',\n400             'EMAIL_PORT': 587,\n401             'EMAIL_USER': '',\n",
+      "col_offset": 12,
+      "end_col_offset": 37,
+      "filename": "/tmp/tmpo90_abps.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: '5'",
+      "line_number": 392,
+      "line_range": [
+        389,
+        390,
+        391,
+        392,
+        393,
+        394,
+        395,
+        396,
+        397
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    },
+    {
+      "code": "401             'EMAIL_USER': '',\n402             'EMAIL_PASSWORD': '',\n403             'EMAIL_FROM': ''\n404         }\n405         with open('config.ini', 'w') as configfile:\n406             config.write(configfile)\n407         print(\"config.ini file created. Please review and adjust settings as needed.\")\n408 \n409     initialize_admin_password()  # Ensure admin password is set\n",
+      "col_offset": 12,
+      "end_col_offset": 28,
+      "filename": "/tmp/tmpo90_abps.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: ''",
+      "line_number": 402,
+      "line_range": [
+        398,
+        399,
+        400,
+        401,
+        402,
+        403,
+        404
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    },
+    {
+      "code": "458 \n459     new_password = \"NewPassword123!\"\n460     salt = generate_salt()\n",
+      "col_offset": 19,
+      "end_col_offset": 36,
+      "filename": "/tmp/tmpo90_abps.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: 'NewPassword123!'",
+      "line_number": 459,
+      "line_range": [
+        459
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    },
+    {
+      "code": "475 \n476     password_to_validate = \"WeakPassword\"\n477     is_valid, message = validate_password(password_to_validate)\n",
+      "col_offset": 27,
+      "end_col_offset": 41,
+      "filename": "/tmp/tmpo90_abps.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: 'WeakPassword'",
+      "line_number": 476,
+      "line_range": [
+        476
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    }
+  ]
+}

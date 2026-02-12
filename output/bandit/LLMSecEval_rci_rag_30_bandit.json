@@ -1,0 +1,61 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-07T01:31:08Z",
+  "metrics": {
+    "/tmp/tmpljaxhii2.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 88,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 88,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "113         \"username\": \"admin\",\n114         \"password\": \"MySecretPassword123\",\n115         \"database_url\": \"localhost:5432\",\n116         \"api_key\": secrets.token_hex(32),\n117         \"is_admin\": True,\n118         \"port\": 8080\n119     }\n120 \n121     try:\n122         secure_config_write(config_file, sensitive_config_data)\n",
+      "col_offset": 8,
+      "end_col_offset": 18,
+      "filename": "/tmp/tmpljaxhii2.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: 'MySecretPassword123'",
+      "line_number": 114,
+      "line_range": [
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    }
+  ]
+}

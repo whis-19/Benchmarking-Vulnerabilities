@@ -1,182 +1,194 @@
-import yaml
-import os
-import hashlib
-import hmac
-import json
-from jsonschema import validate, ValidationError
-import unicodedata
 import logging
 
+# --- Configuration ---
+ALLOWED_EXTENSIONS = ['.yaml', '.yml']
+ALLOWED_LOCATIONS = ['/safe/yaml/directory/']  # Adjust to your safe directory
+HMAC_KEY = os.environ.get("YAML_HMAC_KEY")
+if not HMAC_KEY:
+    raise ValueError("YAML_HMAC_KEY environment variable not set.")
+HMAC_KEY = HMAC_KEY.encode('utf-8')  # Ensure it's bytes
+
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
-# Configuration - These should be defined in a secure configuration file, not hardcoded
-ALLOWED_EXTENSIONS = ['.yaml', '.yml', '.json']  # Only allow these file extensions
-ALLOWED_DIRECTORIES = ['/safe/yaml/directory']  # Only allow files from these directories
-HMAC_KEY = b'YourSecretHMACKey'  # Replace with a strong, randomly generated key.  Store securely!
-
-# JSON Schema for data validation
-DATA_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "name": {"type": "string"},
-        "age": {"type": "integer", "minimum": 0, "maximum": 150},  # Reasonable age range
-        "email": {"type": "string", "format": "email"}  # Validate email format
-    },
-    "required": ["name", "age", "email"]
-}
+logging.basicConfig(filename='error.log', level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
-def is_path_safe(filepath, allowed_directories, allowed_extensions):
+def is_path_safe(filepath, allowed_locations, allowed_extensions):
     """
-    Validates the filepath against allowed directories and extensions to prevent path traversal.
+    Validates the filepath against allowed locations and extensions to prevent path traversal and unauthorized file access.
     """
-    # Check for path traversal attempts
-    if '..' in filepath:
-        logging.warning("Path traversal attempt detected!")
-        return False
-
-    # Normalize the path to prevent bypasses
-    filepath = os.path.abspath(filepath)
-
-    # Resolve symbolic links before checking against allowed directories
-    filepath = os.path.realpath(filepath)
-
-    # Add normpath for extra normalization
+    # Normalize the path
     filepath = os.path.normpath(filepath)
 
-    # Normalize Unicode
-    filepath = unicodedata.normalize('NFKC', filepath)
+    # Check for path traversal attempts
+    if ".." in filepath:
+        logging.warning(f"Path traversal detected in filepath: {filepath}")
+        return False
 
     # Check if the file extension is allowed
     _, ext = os.path.splitext(filepath)
     if ext.lower() not in allowed_extensions:
-        logging.warning(f"File extension '{ext}' not allowed.")
+        logging.warning(f"File extension {ext} not allowed: {ext}")
         return False
 
-    # Check if the file is within an allowed directory
-    for allowed_dir in allowed_directories:
-        allowed_dir = os.path.abspath(allowed_dir)
-        # Ensure the entire path is within the allowed directory
-        if os.path.commonprefix([filepath, allowed_dir]) == allowed_dir:
-            return True
+    # Check if the file is within an allowed location
+    absolute_path = os.path.abspath(filepath)
+    is_allowed = False
+    for allowed_location in allowed_locations:
+        absolute_allowed_location = os.path.abspath(allowed_location)
+        if absolute_path.startswith(absolute_allowed_location):
+            is_allowed = True
+            break
 
-    logging.warning(f"File path '{filepath}' not within allowed directories.")
-    return False
+    if not is_allowed:
+        logging.warning(f"File location {absolute_path} not allowed.")
+        return False
+
+    return True
 
 
 def calculate_hmac(data, key):
-    """Calculates an HMAC for the given data using the provided key.
-
-    WARNING: The key MUST be stored securely (e.g., environment variable, secrets manager).
-    Never hardcode the key in the source code in a production environment.
     """
-    hmac_obj = hmac.new(key, data.encode('utf-8'), hashlib.sha256)
+    Calculates the HMAC-SHA256 hash of the data using the provided key.
+    """
+    hmac_obj = hmac.new(key, data, hashlib.sha256)
     return hmac_obj.hexdigest()
 
 
-def verify_hmac(data, key, expected_hmac):
-    """Verifies the HMAC of the given data against the expected HMAC.
-
-    WARNING: The key MUST be stored securely (e.g., environment variable, secrets manager).
-    Never hardcode the key in the source code in a production environment.
+def verify_hmac(data, key, received_hmac):
+    """
+    Verifies the HMAC-SHA256 hash of the data against the received HMAC.
     """
     calculated_hmac = calculate_hmac(data, key)
-    return hmac.compare_digest(calculated_hmac, expected_hmac)
+    return hmac.compare_digest(calculated_hmac, received_hmac)
+
+
+def sanitize_yaml_data(data):
+    """
+    Sanitizes the loaded YAML data based on expected types and values.
+    This is just an example and needs to be adapted to your specific needs.
+    """
+    if isinstance(data, dict):
+        sanitized_data = {}
+        for key, value in data.items():
+            if key == "name":
+                if isinstance(value, str):
+                    # Example:  Restrict name to alphanumeric characters and spaces
+                    sanitized_data[key] = "".join(c for c in value if c.isalnum() or c.isspace())
+                else:
+                    raise ValueError("Invalid type for 'name': expected string")
+            elif key == "value":
+                if isinstance(value, int):
+                    # Example:  Ensure value is within a reasonable range
+                    if 0 <= value <= 1000:
+                        sanitized_data[key] = value
+                    else:
+                        raise ValueError("Value out of range")
+                else:
+                    raise ValueError("Invalid type for 'value': expected integer")
+            else:
+                # Unknown key - either reject or handle safely
+                # In this example, we reject unknown keys
+                raise ValueError(f"Unknown key: {key}")
+        return sanitized_data
+    else:
+        raise ValueError("Expected a dictionary as the root YAML object")
 
 
 def yaml_load(filename):
     """
-    Safely loads YAML or JSON data from a file, validating the path and using safe deserialization.
-
-    Note: A Time-of-Check-Time-of-Use (TOCTOU) race condition exists. The file is checked for safety,
-    but it could be modified after the check and before it's opened. The HMAC helps mitigate this,
-    but it's not a complete solution.  Consider further mitigation strategies if TOCTOU is a critical concern.
+    Safely loads YAML data from a file, validating the file path and verifying an HMAC.
     """
 
-    if not is_path_safe(filename, ALLOWED_DIRECTORIES, ALLOWED_EXTENSIONS):
-        logging.error(f"Invalid file path: {filename}")
+    # Ensure filename is an absolute path
+    filename = os.path.abspath(filename)
+
+    if not is_path_safe(filename, ALLOWED_LOCATIONS, ALLOWED_EXTENSIONS):
         raise ValueError("Invalid file path.")
 
     try:
-        with open(filename, 'r') as f:
+        with open(filename, 'rb') as f:  # Open in binary mode for HMAC calculation
             file_content = f.read()
-    except FileNotFoundError as e:
+
+        # Assuming the file contains YAML data and an HMAC in JSON format:
+        # {"data": "yaml_data", "hmac": "hmac_value"}
+        try:
+            data_dict = json.loads(file_content.decode('utf-8')) # Decode to string for JSON parsing
+            yaml_data = data_dict.get('data')
+            received_hmac = data_dict.get('hmac')
+        except (json.JSONDecodeError, AttributeError) as e:
+            logging.error(f"Invalid file format in {filename}: Expected JSON with 'data' and 'hmac' fields. {e}")
+            raise ValueError(f"Invalid file format: Expected JSON with 'data' and 'hmac' fields. {e}")
+
+        if not yaml_data or not received_hmac:
+            logging.error(f"Missing 'data' or 'hmac' field in JSON from {filename}.")
+            raise ValueError("Missing 'data' or 'hmac' field in JSON.")
+
+        # Verify the HMAC
+        if not verify_hmac(yaml_data.encode('utf-8'), HMAC_KEY, received_hmac): # Encode to bytes for HMAC
+            logging.warning(f"HMAC verification failed for {filename}. File may be corrupted or tampered with.")
+            raise ValueError("HMAC verification failed. File may be corrupted or tampered with.")
+
+        # Safely load the YAML data
+        try:
+            loaded_data = yaml.safe_load(yaml_data)
+            # Sanitize the loaded data
+            sanitized_data = sanitize_yaml_data(loaded_data)
+            return sanitized_data
+        except yaml.YAMLError as e:
+            logging.error(f"YAML parsing error in {filename}: {e}")
+            raise ValueError(f"YAML parsing error: {e}")
+
+    except FileNotFoundError:
         logging.error(f"File not found: {filename}")
-        raise FileNotFoundError(f"File not found: {filename}") from e
-    except IOError as e:
-        logging.error(f"Error reading file: {e}")
-        raise IOError(f"Error reading file: {e}") from e
+        raise FileNotFoundError(f"File not found: {filename}")
+    except ValueError as e:
+        logging.error(f"ValueError in {filename}: {e}")
+        raise  # Re-raise the ValueError to be handled by the caller
+    except Exception as e:
+        logging.exception(f"An unexpected error occurred while processing {filename}: {e}") # Use logging.exception to capture the stack trace
+        raise  # Re-raise the exception to be handled by the caller
 
-    # Integrity Check (HMAC) -  This assumes the file contains the data and the HMAC
-    try:
-        data_dict = json.loads(file_content)  # Assume file is JSON containing data and HMAC
-        data = data_dict['data']
-        hmac_value = data_dict['hmac']
-    except (json.JSONDecodeError, KeyError) as e:
-        logging.error(f"Error decoding JSON or missing 'data' or 'hmac' fields: {e}")
-        raise ValueError("Invalid file format: Expected JSON with 'data' and 'hmac' fields.") from e
-
-    if not verify_hmac(data, HMAC_KEY, hmac_value):
-        logging.error("HMAC verification failed.  File may be corrupted or tampered with.")
-        raise ValueError("HMAC verification failed.  File may be corrupted or tampered with.")
-
-    # Data Validation (Example - adapt to your specific data structure)
-    try:
-        # Attempt to parse the data as YAML.  If it fails, it's not valid YAML.
-        loaded_data = yaml.safe_load(data)
-
-        # Validate against the JSON schema
-        validate(instance=loaded_data, schema=DATA_SCHEMA)
-
-    except yaml.YAMLError as e:
-        logging.error(f"Invalid YAML data: {e}")
-        raise ValueError(f"Invalid YAML data: {e}") from e
-    except ValidationError as e:
-        logging.error(f"Data validation failed: {e}")
-        # Provide a more user-friendly error message (optional)
-        # error_message = f"Data validation failed: {e.message} (field: {e.path})"
-        # raise ValueError(error_message) from e
-        raise ValueError(f"Data validation failed: {e}") from e
-
-
-    return loaded_data
-
-
-# Example Usage (for testing)
+# --- Example Usage (Illustrative) ---
 if __name__ == '__main__':
-    # Create a safe directory (if it doesn't exist)
-    safe_dir = ALLOWED_DIRECTORIES[0]
+    # Create a safe directory (for testing purposes only - create this manually in a real application)
+    safe_dir = "/safe/yaml/directory/"
     if not os.path.exists(safe_dir):
-        os.makedirs(safe_dir, exist_ok=True)
+        os.makedirs(safe_dir)
 
-    # Example data
-    data = {'name': 'Alice', 'age': 30, 'email': 'alice@example.com'}
-    data_str = yaml.dump(data)  # Convert to YAML string
+    # Example YAML data
+    yaml_data = """
+    name: Example <script>alert("XSS")</script>
+    value: 123
+    """
 
     # Calculate HMAC
-    hmac_value = calculate_hmac(data_str, HMAC_KEY)
+    hmac_value = calculate_hmac(yaml_data.encode('utf-8'), HMAC_KEY)
 
-    # Create a JSON structure with data and HMAC
-    file_content = json.dumps({'data': data_str, 'hmac': hmac_value})
+    # Create a JSON payload with YAML data and HMAC
+    payload = {"data": yaml_data, "hmac": hmac_value}
+    json_payload = json.dumps(payload)
 
-    # Write to a file in the safe directory
-    safe_file = os.path.join(safe_dir, 'safe_data.yaml.json')  # Use .json extension to indicate JSON format
-    with open(safe_file, 'w') as f:
-        f.write(file_content)
+    # Write the JSON payload to a file in the safe directory
+    safe_file = os.path.join(safe_dir, "example.yaml")
+    with open(safe_file, "w") as f:
+        f.write(json_payload)
 
     try:
-        loaded_data = yaml_load(safe_file)
-        print("Loaded data:", loaded_data)
-        logging.info(f"Successfully loaded data from {safe_file}")
+        # Load the YAML data from the safe file
+        data = yaml_load(safe_file)
+        print("Loaded data:", data)
     except Exception as e:
-        print("Error loading data:", e)
-        logging.error(f"Error loading data from {safe_file}: {e}")
+        print("Error loading YAML:", e)
 
     # Example of an unsafe path (will raise an error)
-    # try:
-    #     loaded_data = yaml_load('../../../unsafe_data.yaml')
-    #     print("Loaded data:", loaded_data)
-    # except Exception as e:
-    #     print("Error loading data:", e)
+    try:
+        data = yaml_load("../unsafe.yaml")  # Attempt to load from outside the allowed directory
+    except ValueError as e:
+        print("Expected error:", e)
+
+    # Example of an invalid file extension (will raise an error)
+    try:
+        data = yaml_load(os.path.join(safe_dir, "example.txt"))
+    except ValueError as e:
+        print("Expected error:", e)
 

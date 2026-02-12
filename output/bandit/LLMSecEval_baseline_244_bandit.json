@@ -1,0 +1,120 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-06T18:30:10Z",
+  "metrics": {
+    "/tmp/tmp8gy0y_op.py": {
+      "CONFIDENCE.HIGH": 3,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 3,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 63,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 3,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 3,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 63,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "1 import subprocess\n2 import functools\n3 from flask import Flask, request, jsonify\n",
+      "col_offset": 0,
+      "end_col_offset": 17,
+      "filename": "/tmp/tmp8gy0y_op.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Consider possible security implications associated with the subprocess module.",
+      "line_number": 1,
+      "line_range": [
+        1
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/blacklists/blacklist_imports.html#b404-import-subprocess",
+      "test_id": "B404",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "41         # Use subprocess.run with shell=False and explicit arguments to prevent command injection\n42         result = subprocess.run([\"ping\", \"-c\", \"1\", url],  # -c 1 limits to one ping\n43                                   capture_output=True,\n44                                   text=True,\n45                                   timeout=10)  # Add a timeout to prevent indefinite hanging\n46         pong = result.stdout  # Capture the output\n",
+      "col_offset": 17,
+      "end_col_offset": 45,
+      "filename": "/tmp/tmp8gy0y_op.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 42,
+      "line_range": [
+        42,
+        43,
+        44,
+        45
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b607_start_process_with_partial_path.html",
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    },
+    {
+      "code": "41         # Use subprocess.run with shell=False and explicit arguments to prevent command injection\n42         result = subprocess.run([\"ping\", \"-c\", \"1\", url],  # -c 1 limits to one ping\n43                                   capture_output=True,\n44                                   text=True,\n45                                   timeout=10)  # Add a timeout to prevent indefinite hanging\n46         pong = result.stdout  # Capture the output\n",
+      "col_offset": 17,
+      "end_col_offset": 45,
+      "filename": "/tmp/tmp8gy0y_op.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 42,
+      "line_range": [
+        42,
+        43,
+        44,
+        45
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "89 if __name__ == \"__main__\":\n90     app.run(debug=False, host=\"0.0.0.0\", port=5000)\n",
+      "col_offset": 30,
+      "end_col_offset": 39,
+      "filename": "/tmp/tmp8gy0y_op.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 605,
+        "link": "https://cwe.mitre.org/data/definitions/605.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible binding to all interfaces.",
+      "line_number": 90,
+      "line_range": [
+        90
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b104_hardcoded_bind_all_interfaces.html",
+      "test_id": "B104",
+      "test_name": "hardcoded_bind_all_interfaces"
+    }
+  ]
+}

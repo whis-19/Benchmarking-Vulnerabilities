@@ -1,0 +1,57 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-06T18:12:58Z",
+  "metrics": {
+    "/tmp/tmppj0depyq.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 91,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 91,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "114     httpd = socketserver.TCPServer((\"\", PORT), Handler)\n115     httpd.socket = ssl.wrap_socket(httpd.socket,\n116                                    certfile=CERTFILE,\n117                                    keyfile=KEYFILE,\n118                                    server_side=True)\n119 else:\n",
+      "col_offset": 19,
+      "end_col_offset": 52,
+      "filename": "/tmp/tmppj0depyq.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "ssl.wrap_socket call with no SSL/TLS protocol version specified, the default SSLv23 could be insecure, possible security issue.",
+      "line_number": 115,
+      "line_range": [
+        115,
+        116,
+        117,
+        118
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b504_ssl_with_no_version.html",
+      "test_id": "B504",
+      "test_name": "ssl_with_no_version"
+    }
+  ]
+}

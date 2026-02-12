@@ -1,27 +1,27 @@
-import marshal
-    import hashlib
+import requests
     import hmac
-    import requests
-    import os
+    import hashlib
+    import json
 
-    # Generate some data to marshal
-    data = {"message": "Hello, world!"}
-    marshalled_data = marshal.dumps(data)
+    # Replace with the actual URL of your Flask app
+    url = 'http://localhost:5000/process_data'
 
-    # Calculate the HMAC
-    SECRET_KEY = b'your_secret_key'  # Replace with the same key used in the Flask app
-    calculated_hmac = hmac.new(SECRET_KEY, marshalled_data, hashlib.sha256).hexdigest()
+    # Data to send (must be JSON serializable)
+    data = {"user_id": 123, "username": "testuser"}
+    data_string = json.dumps(data)
+    data_bytes = data_string.encode('utf-8')
 
-    # Convert the marshalled data to hex
-    hex_data = marshalled_data.hex()
+    # Generate HMAC
+    secret_key = b'YOUR_SECRET_KEY'  # Replace with the same key used in the Flask app
+    hmac_value = hmac.new(secret_key, data_bytes, hashlib.sha256).hexdigest()
 
-    # Prepare the data for the POST request
-    post_data = {'data': hex_data, 'hmac': calculated_hmac}
+    # Create the request payload
+    payload = {'data': data_string, 'hmac': hmac_value}
 
-    # Send the POST request
-    response = requests.post('http://localhost:5000/unmarshal', data=post_data)
+    # Send the request
+    response = requests.post(url, json=payload)
 
     # Print the response
     print(response.status_code)
-    print(response.text)
+    print(response.json())
 

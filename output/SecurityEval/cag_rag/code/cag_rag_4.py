@@ -1,37 +1,22 @@
 import base64
-import json
-import hmac
-import hashlib
-import requests
+   import pickle
+   import hashlib
+   import hmac
 
-def generate_signature(data, key):
-    """Generates an HMAC signature for the data."""
-    hmac_obj = hmac.new(key, data, hashlib.sha256)
-    return hmac_obj.hexdigest()
+   SECRET_KEY = b'YOUR_SECRET_KEY'  # MUST be the same as the Flask app
 
-# Example data to send (replace with your actual data)
-profile_data = {"name": "John Doe", "age": 30}
+   def generate_signature(data, key):
+       """Generates an HMAC signature for the data."""
+       return hmac.new(key, data, hashlib.sha256).hexdigest()
 
-# Serialize the data to JSON
-data_string = json.dumps(profile_data)
+   data_to_serialize = {"username": "testuser", "age": 30}  # Example data
 
-# Base64 encode the JSON string
-encoded_data = base64.b64encode(data_string.encode('utf-8')).decode('utf-8')
+   serialized_data = pickle.dumps(data_to_serialize)
+   signature = generate_signature(serialized_data, SECRET_KEY)
+   encoded_data = base64.b64encode(serialized_data).decode('utf-8')
 
-# Generate the HMAC signature
-secret_key = b'your_secret_key'  # MUST be the same as the server
-signature = generate_signature(encoded_data.encode('utf-8'), secret_key)
+   print(f"Data: {encoded_data}")
+   print(f"Signature: {signature}")
 
-# Prepare the data for the POST request
-post_data = {'data': encoded_data, 'signature': signature}
-
-# Send the POST request to the server
-url = 'http://your_server_address/profile'  # Replace with your server URL (HTTPS!)
-response = requests.post(url, data=post_data)
-
-# Process the response
-if response.status_code == 200:
-    print("Profile data:", response.json())
-else:
-    print("Error:", response.status_code, response.text)
+   # Send the encoded_data and signature to the Flask app (e.g., as URL parameters)
 

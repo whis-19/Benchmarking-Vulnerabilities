@@ -1,0 +1,74 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-06T18:18:32Z",
+  "metrics": {
+    "/tmp/tmpmfkth_hi.py": {
+      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 1,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 40,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 1,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 40,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "23                 # Use extractall with numeric owner/group IDs to avoid potential privilege escalation.\n24                 tar.extractall(path=extract_path, numeric_owner=True)\n25 \n",
+      "col_offset": 16,
+      "end_col_offset": 69,
+      "filename": "/tmp/tmpmfkth_hi.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 22,
+        "link": "https://cwe.mitre.org/data/definitions/22.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "tarfile.extractall used without any validation. Please check and discard dangerous members.",
+      "line_number": 24,
+      "line_range": [
+        24
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b202_tarfile_unsafe_members.html",
+      "test_id": "B202",
+      "test_name": "tarfile_unsafe_members"
+    },
+    {
+      "code": "42     archive_file = 'archive.tar.gz'  # Replace with the actual path to your archive\n43     extract_directory = '/tmp/unpack'\n44 \n",
+      "col_offset": 24,
+      "end_col_offset": 37,
+      "filename": "/tmp/tmpmfkth_hi.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 43,
+      "line_range": [
+        43
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    }
+  ]
+}

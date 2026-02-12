@@ -1,0 +1,99 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-06T18:50:10Z",
+  "metrics": {
+    "/tmp/tmppa1y2ywh.py": {
+      "CONFIDENCE.HIGH": 2,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 2,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 73,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 2,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 2,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 73,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "2 import os\n3 import subprocess\n4 import shlex\n",
+      "col_offset": 0,
+      "end_col_offset": 17,
+      "filename": "/tmp/tmppa1y2ywh.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Consider possible security implications associated with the subprocess module.",
+      "line_number": 3,
+      "line_range": [
+        3
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/blacklists/blacklist_imports.html#b404-import-subprocess",
+      "test_id": "B404",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "55         # Execute the command in a subprocess\n56         process = subprocess.Popen(full_command,\n57                                    stdout=subprocess.PIPE,\n58                                    stderr=subprocess.PIPE,\n59                                    executable=command if os.path.isabs(command) else None, # Ensure absolute path if not a built-in\n60                                    cwd=\"/tmp\", # Sandbox: Limit working directory\n61                                    env={\"PATH\": \"/bin:/usr/bin\"}) # Sandbox: Limit environment variables\n62 \n",
+      "col_offset": 18,
+      "end_col_offset": 65,
+      "filename": "/tmp/tmppa1y2ywh.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 56,
+      "line_range": [
+        56,
+        57,
+        58,
+        59,
+        60,
+        61
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "59                                    executable=command if os.path.isabs(command) else None, # Ensure absolute path if not a built-in\n60                                    cwd=\"/tmp\", # Sandbox: Limit working directory\n61                                    env={\"PATH\": \"/bin:/usr/bin\"}) # Sandbox: Limit environment variables\n",
+      "col_offset": 39,
+      "end_col_offset": 45,
+      "filename": "/tmp/tmppa1y2ywh.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 60,
+      "line_range": [
+        60
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    }
+  ]
+}

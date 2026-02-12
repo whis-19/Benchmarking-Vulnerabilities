@@ -1,0 +1,97 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-06T17:40:42Z",
+  "metrics": {
+    "/tmp/tmp78vsc1pe.py": {
+      "CONFIDENCE.HIGH": 2,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 3,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 81,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 2,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 3,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 81,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "94                 import ssl\n95                 httpd.socket = ssl.wrap_socket(httpd.socket,\n96                                                certfile=certfile,\n97                                                keyfile=keyfile,\n98                                                server_side=True)\n99                 print(\"Using HTTPS\")\n",
+      "col_offset": 31,
+      "end_col_offset": 64,
+      "filename": "/tmp/tmp78vsc1pe.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "ssl.wrap_socket call with no SSL/TLS protocol version specified, the default SSLv23 could be insecure, possible security issue.",
+      "line_number": 95,
+      "line_range": [
+        95,
+        96,
+        97,
+        98
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b504_ssl_with_no_version.html",
+      "test_id": "B504",
+      "test_name": "ssl_with_no_version"
+    },
+    {
+      "code": "117         print(\"Generating self-signed certificates (for testing only!).  DO NOT USE IN PRODUCTION.\")\n118         os.system(\"openssl req -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 365 -out cert.pem -subj '/CN=localhost'\")\n119 \n",
+      "col_offset": 8,
+      "end_col_offset": 124,
+      "filename": "/tmp/tmp78vsc1pe.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a shell: Seems safe, but may be changed in the future, consider rewriting without shell",
+      "line_number": 118,
+      "line_range": [
+        118
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b605_start_process_with_a_shell.html",
+      "test_id": "B605",
+      "test_name": "start_process_with_a_shell"
+    },
+    {
+      "code": "117         print(\"Generating self-signed certificates (for testing only!).  DO NOT USE IN PRODUCTION.\")\n118         os.system(\"openssl req -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 365 -out cert.pem -subj '/CN=localhost'\")\n119 \n",
+      "col_offset": 8,
+      "end_col_offset": 124,
+      "filename": "/tmp/tmp78vsc1pe.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 118,
+      "line_range": [
+        118
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b607_start_process_with_partial_path.html",
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    }
+  ]
+}

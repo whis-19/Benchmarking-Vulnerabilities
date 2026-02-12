@@ -1,0 +1,127 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-06T19:25:37Z",
+  "metrics": {
+    "/tmp/tmpqd4pn8d6.py": {
+      "CONFIDENCE.HIGH": 2,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 2,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 4,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 131,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 2,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 2,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 4,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 131,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "6 from cryptography.fernet import Fernet\n7 import subprocess\n8 import shlex\n",
+      "col_offset": 0,
+      "end_col_offset": 17,
+      "filename": "/tmp/tmpqd4pn8d6.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Consider possible security implications associated with the subprocess module.",
+      "line_number": 7,
+      "line_range": [
+        7
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/blacklists/blacklist_imports.html#b404-import-subprocess",
+      "test_id": "B404",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "101             # Execute the command in the sandbox\n102             result = subprocess.run(\n103                 quoted_command,\n104                 capture_output=True,\n105                 text=True,\n106                 cwd=sandbox_dir,  # Run in the temporary directory\n107                 timeout=10,  # Add a timeout\n108                 check=True  # Raise an exception on non-zero exit code\n109             )\n110 \n",
+      "col_offset": 21,
+      "end_col_offset": 13,
+      "filename": "/tmp/tmpqd4pn8d6.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 102,
+      "line_range": [
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "140         \"username\": \"testuser\",\n141         \"password\": \"secure_password123\",  # Sensitive\n142         \"api_key\": \"abcdef123456\",  # Sensitive\n143         \"log_level\": \"INFO\"\n144     }\n145 \n146     # 3. Create the configuration file\n147     try:\n148         create_config_file(config_data, encryption_key)\n",
+      "col_offset": 8,
+      "end_col_offset": 18,
+      "filename": "/tmp/tmpqd4pn8d6.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: 'secure_password123'",
+      "line_number": 141,
+      "line_range": [
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    },
+    {
+      "code": "177     # 6. Example of password hashing\n178     plain_text_password = \"another_strong_password\"\n179     hashed_password = hash_password(plain_text_password)\n",
+      "col_offset": 26,
+      "end_col_offset": 51,
+      "filename": "/tmp/tmpqd4pn8d6.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: 'another_strong_password'",
+      "line_number": 178,
+      "line_range": [
+        178
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    }
+  ]
+}

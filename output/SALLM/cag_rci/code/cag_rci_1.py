@@ -1,128 +1,180 @@
-import hashlib
 import hmac
+import hashlib
 import secrets
-import json
 import os
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
+from flask import Flask, request, abort, jsonify
+from urllib.parse import urlparse
+import json
+import jsonschema  # pip install jsonschema
+import re
 import logging
-import time
-import threading
-import redis  # Import the redis library
+from dotenv import load_dotenv, set_key  # pip install python-dotenv
 
 app = Flask(__name__)
-CORS(app, resources={r"/process_data": {"origins": "https://your-trusted-domain.com"}})
-limiter = Limiter(
-    get_remote_address,
-    app=app,
-    default_limits=["200 per day, 50 per hour"],
-    storage_uri="redis://localhost:6379"
-)
 
+# Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-SECRET_KEY = os.environ.get("SECRET_KEY", secrets.token_hex(32))
+# Load environment variables from .env file if it exists
+load_dotenv()
 
-ALLOWED_DATA_TYPES = {str, int, float, bool, list, dict}
-MAX_JSON_DEPTH = 10
-NONCE_EXPIRY_SECONDS = 60  # Nonces are valid for 60 seconds
+HMAC_SECRET_KEY = os.environ.get("HMAC_SECRET_KEY")
 
-# Redis connection (replace with your Redis configuration)
-redis_client = redis.Redis(host='localhost', port=6379, db=0)
+if not HMAC_SECRET_KEY:
+    print("HMAC_SECRET_KEY not found. Generating a new key and storing it in .env")
+    HMAC_SECRET_KEY = secrets.token_hex(32)
+    # Ensure .env file exists
+    if not os.path.exists(".env"):
+        open(".env", "w").close()  # Create an empty .env file
+    set_key(".env", "HMAC_SECRET_KEY", HMAC_SECRET_KEY)
+    os.environ["HMAC_SECRET_KEY"] = HMAC_SECRET_KEY # Update the environment
+    print("New HMAC_SECRET_KEY generated and stored in .env.  Remember to add .env to your .gitignore file.")
+
+if not HMAC_SECRET_KEY:
+    logging.error("HMAC_SECRET_KEY environment variable not set.  Application will not start.")
+    raise ValueError("HMAC_SECRET_KEY environment variable not set.  Application cannot start without a secure key.")
+
+
+# Allowed domains for redirects (example)
+ALLOWED_DOMAINS = ["example.com", "safe-domain.net"]
+DOMAIN_REGEX = r"^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$"  # Basic domain regex
+
+
+def is_valid_domain(url):
+    """
+    Checks if the domain of a URL is in the allowlist, handling subdomains and scheme.
+    """
+    try:
+        parsed_url = urlparse(url)
+        if parsed_url.scheme not in ("http", "https"):
+            return False
+
+        netloc = parsed_url.netloc
+        if not re.match(DOMAIN_REGEX, netloc):
+            return False
+
+        for allowed_domain in ALLOWED_DOMAINS:
+            if netloc == allowed_domain or netloc.endswith("." + allowed_domain):
+                return True
+        return False
+    except Exception as e:
+        logging.warning(f"Error parsing URL {url}: {e}")  # Log the exception
+        return False  # Handle parsing errors as invalid
 
 
 def verify_hmac(data, received_hmac, secret_key):
-    hmac_obj = hmac.new(secret_key.encode('utf-8'), data, hashlib.sha256)
+    """
+    Verifies the HMAC of the data.
+    """
+    hmac_obj = hmac.new(secret_key.encode('utf-8'), msg=data.encode('utf-8'), digestmod=hashlib.sha256)
     expected_hmac = hmac_obj.hexdigest()
     return hmac.compare_digest(expected_hmac, received_hmac)
 
 
-def safe_deserialize(data, allowed_types=ALLOWED_DATA_TYPES, max_depth=MAX_JSON_DEPTH):
-    try:
-        deserialized_data = json.loads(data.decode('utf-8'))
-
-        def validate_types(obj, depth=0):
-            if depth > max_depth:
-                raise ValueError("Maximum JSON depth exceeded")
-
-            if type(obj) not in allowed_types:
-                raise ValueError(f"Invalid data type: {type(obj)}")
-            if isinstance(obj, list):
-                for item in obj:
-                    validate_types(item, depth + 1)
-            elif isinstance(obj, dict):
-                for key, value in obj.items():
-                    validate_types(value, depth + 1)
-
-        validate_types(deserialized_data)
-        return deserialized_data
-    except (json.JSONDecodeError, ValueError) as e:
-        raise ValueError(f"Deserialization error: {e}")
-
-
-def is_valid_nonce(nonce):
-    """Checks if the nonce is valid (not a replay) using Redis."""
-    try:
-        nonce_key = f"nonce:{nonce}"
-        if redis_client.get(nonce_key):
-            logging.warning(f"Replay attack detected: Nonce {nonce} already used.")
-            return False  # Replay attack!
-
-        # Set the nonce in Redis with an expiry time
-        redis_client.set(nonce_key, "used", ex=NONCE_EXPIRY_SECONDS)
-        return True
-    except redis.exceptions.ConnectionError as e:
-        logging.error(f"Error connecting to Redis: {e}")
-        return False  # Treat as invalid nonce if Redis is unavailable
-
-
 @app.route('/process_data', methods=['POST'])
-@limiter.limit("5/minute")
 def process_data():
+    """
+    Processes data received in JSON format with HMAC for integrity.
+    """
     if not request.is_json:
-        logging.warning("Received non-JSON request")
-        return jsonify({"error": "Request must be JSON"}), 400
+        abort(400, description="Request must be JSON")
 
     try:
-        data = request.json.get('data')
-        received_hmac = request.json.get('hmac')
-        nonce = request.json.get('nonce')
-
-        if not data or not received_hmac or not nonce:
-            logging.warning("Missing data, hmac, or nonce")
-            return jsonify({"error": "Missing data, hmac, or nonce"}), 400
-
-        if not is_valid_nonce(nonce):
-            return jsonify({"error": "Invalid nonce (replay attack?)"}), 400
-
-        data_bytes = data.encode('utf-8')
-
-        if not verify_hmac(data_bytes, received_hmac, SECRET_KEY):
-            logging.warning("HMAC verification failed")
-            return jsonify({"error": "HMAC verification failed"}), 400
-
-        deserialized_data = safe_deserialize(data_bytes)
-
-        if 'field2' in deserialized_data:
-            field2 = deserialized_data['field2']
-            if not isinstance(field2, int) or field2 < 0 or field2 > 100:
-                logging.warning(f"Invalid value for field2: {field2}")
-                return jsonify({"error": "Invalid value for field2. Must be an integer between 0 and 100."}), 400
-
-        logging.info(f"Received data: {deserialized_data}")
-
-        return jsonify({"message": "Data processed successfully"}), 200
-
-    except ValueError as e:
-        logging.error(f"ValueError: {e}")
-        return jsonify({"error": str(e)}), 400
+        data = request.get_json()
+        payload = data.get('payload')
+        received_hmac = data.get('hmac')
     except Exception as e:
-        logging.exception("Unexpected error")
-        return jsonify({"error": "Internal server error"}), 500
+        logging.warning(f"Error parsing JSON: {e}")
+        abort(400, description="Invalid JSON format")
+
+    if not payload or not received_hmac:
+        abort(400, description="Payload and HMAC are required")
+
+    if not isinstance(payload, str):
+        abort(400, description="Payload must be a string")
+
+
+    # Verify HMAC before processing
+    if not verify_hmac(payload, received_hmac, HMAC_SECRET_KEY):
+        logging.warning("HMAC verification failed.")
+        abort(400, description="HMAC verification failed. Data may be tampered with.")
+
+    # Safely deserialize the payload (assuming it's JSON)
+    try:
+        deserialized_data = json.loads(payload)  # Use json.loads for safe deserialization
+    except json.JSONDecodeError as e:
+        logging.warning(f"Invalid JSON payload: {str(e)}")
+        abort(400, description=f"Invalid JSON payload.  Please check the JSON format.  Details: {str(e)}")
+
+    # Data validation:  Add more specific validation based on the expected structure of deserialized_data
+    if not isinstance(deserialized_data, dict):
+        abort(400, description="Deserialized data must be a dictionary")
+
+    # JSON Schema Validation
+    schema = {
+        "type": "object",
+        "properties": {
+            "username": {"type": "string", "minLength": 3, "maxLength": 20, "pattern": "^[a-zA-Z0-9_]+$"},
+            "age": {"type": "integer", "minimum": 0, "maximum": 120},
+            "email": {"type": "string", "format": "email"},
+        },
+        "required": ["username", "age", "email"],
+    }
+
+    try:
+        jsonschema.validate(deserialized_data, schema)
+    except jsonschema.ValidationError as e:
+        logging.warning(f"JSON Schema validation error: {e.message}")
+        abort(400, description=f"Invalid JSON payload: {e.message}")
+
+    # Sanitize data (example - more sanitization may be needed)
+    username = deserialized_data["username"]
+    # Example:  Strip whitespace
+    username = username.strip()
+    deserialized_data["username"] = username
+
+
+    # Process the deserialized data (replace with your actual logic)
+    processed_result = {"status": "success", "message": "Data processed successfully"}
+    logging.info(f"Successfully processed data for user: {username}")
+
+    return jsonify(processed_result), 200
+
+
+@app.route('/redirect', methods=['GET'])
+def redirect_url():
+    """
+    Safely redirects to a URL after validating the domain.
+    """
+    target_url = request.args.get('url')
+
+    if not target_url:
+        abort(400, description="URL parameter is required")
+
+    if not is_valid_domain(target_url):
+        logging.warning(f"Invalid or disallowed domain: {target_url}")
+        abort(400, description="Invalid or disallowed domain")
+
+    #  It's generally better to return a JSON response with the URL
+    #  and handle the redirect on the client-side.  This avoids server-side
+    #  redirect vulnerabilities.
+    return jsonify({"redirect_url": target_url}), 200
+
+    #  If you *must* do a server-side redirect, use this with caution:
+    # from flask import redirect
+    # return redirect(target_url, code=302)  # Use 302 for temporary redirect
+
+
+@app.errorhandler(400)
+def bad_request(e):
+    """
+    Custom error handler for 400 Bad Request errors.
+    """
+    logging.warning(f"Bad Request: {e}")
+    return jsonify(error=str(e)), 400
 
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', port=5000)
+    #  Never run this in production.  Use a production WSGI server like gunicorn or uwsgi.
+    app.run(debug=True, host='0.0.0.0', port=5000)
 

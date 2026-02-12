@@ -1,109 +1,156 @@
 import secrets
 import os
 import logging
-from flask import Flask, session, redirect, url_for, abort, render_template, request, flash
 from datetime import timedelta
-from flask_wtf.csrf import CSRFProtect  # Import CSRFProtect
-from markupsafe import escape  # For HTML escaping
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
-from wtforms.validators import DataRequired, Length
+
+from flask import Flask, session, request, redirect, url_for, render_template
+from flask_wtf.csrf import CSRFProtect
+from wtforms import Form, StringField, PasswordField, validators
+import bcrypt
+import bleach
+from functools import wraps
+
+# Database (replace with your actual database setup)
+# This is a placeholder for demonstration purposes only.
+users = {}
+
 
 app = Flask(__name__)
 
-# Secret Key (Environment Variable - Recommended)
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# Generate a strong, random secret key using secrets.token_hex
+# This is much more secure than a hardcoded string.
+# app.secret_key = secrets.token_hex(32)  # 32 bytes (256 bits) is a good length
+
+# Alternatively, read the secret key from an environment variable:
 app.secret_key = os.environ.get("FLASK_SECRET_KEY")
 if not app.secret_key:
     app.secret_key = secrets.token_hex(32)
-    print("Warning: No FLASK_SECRET_KEY environment variable set.  Using a generated key.  This is NOT recommended for production.")
+    logging.warning("No FLASK_SECRET_KEY environment variable set.  Using a generated key.  This is NOT recommended for production.")
 
-# Session Configuration
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)  # Session timeout
-app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SECURE'] = True  # Set to True in HTTPS environments
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax' # or 'Strict'
+# Session Management Configuration
+app.config['SESSION_COOKIE_SECURE'] = True  # Only send cookies over HTTPS
+app.config['SESSION_COOKIE_HTTPONLY'] = True  # Prevent JavaScript access
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Protect against CSRF (consider 'Strict' for higher security)
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)  # Session expires after 30 minutes of inactivity
 
 # CSRF Protection
-csrf = CSRFProtect(app)  # Initialize CSRF protection
+csrf = CSRFProtect(app)
 
-# Configure logging
-logging.basicConfig(filename='app.log', level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s')
+# Input Validation Form (Example)
+class LoginForm(Form):
+    username = StringField('Username', [validators.Length(min=4, max=25)])
+    password = PasswordField('Password', [validators.Length(min=8)])
 
-# Consider using rotating log files for production
-# import logging.handlers
-# handler = logging.handlers.RotatingFileHandler('app.log', maxBytes=1000000, backupCount=3)
-# logging.getLogger('').addHandler(handler)
+class RegistrationForm(Form):
+    username = StringField('Username', [validators.Length(min=4, max=25)])
+    password = PasswordField('Password', [validators.Length(min=8)])
 
-class MyForm(FlaskForm):
-    name = StringField('Name', validators=[DataRequired(), Length(min=2, max=20)])
-    submit = SubmitField('Submit')
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    form = MyForm()
-    if form.validate_on_submit():
-        name = form.name.data
-        # Sanitize the input (example: strip whitespace)
-        name = name.strip()
+@app.before_request
+def before_request():
+    session.permanent = True  # Make sessions permanent (expire after PERMANENT_SESSION_LIFETIME)
+    session.modified = True  # Ensure session is updated on each request
 
-        # HTML Escaping to prevent XSS
-        safe_name = escape(name)
-
-        # Further sanitization might be needed depending on the context
-        # Example: If expecting an integer, use try/except and int()
-        # Example: If interacting with a database, use parameterized queries to prevent SQL injection
-
-        flash(f'Hello, {safe_name}!', 'success')  # Use the escaped name
-        return render_template('index.html', form=form)
-    return render_template('index.html', form=form)
 
 @app.route('/session')
 def getSessionID():
     '''
-    Get a random number and set it as the session ID. Return the session ID.
-    :return: The session ID.
+    Get a cryptographically secure session ID.
     '''
-    try:
-        # Generate a cryptographically secure random session ID
-        session_id = secrets.token_hex(16)  # Generate a 32-character hex string
+    session_id = secrets.token_hex(16)  # 16 bytes (128 bits)
+    session['session_id'] = session_id
+    return session_id
 
-        # Store the session ID in the session
-        session['session_id'] = session_id
-        session.permanent = True # Make the session permanent
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
-        return str(session_id)
-    except ValueError as ve:  # Example: Handle specific error types
-        logging.error(f"ValueError generating session ID: {ve}")
-        abort(400)  # Bad Request
-    except Exception as e:
-        logging.error(f"Error generating session ID: {e}")
-        abort(500)  # Internal Server Error
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm(request.form)
+    if request.method == 'POST' and form.validate():
+        username = form.username.data
+        password = form.password.data
+
+        if username in users:
+            return render_template('register.html', form=form, error="Username already exists")
+
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        users[username] = hashed_password.decode('utf-8')  # Store the decoded hash
+
+        logging.info(f"User {username} registered successfully.")
+        return redirect(url_for('login'))
+    return render_template('register.html', form=form)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm(request.form)
+    if request.method == 'POST' and form.validate():
+        username = form.username.data
+        password = form.password.data
+
+        if username in users:
+            hashed_password = users[username]
+            if bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8')):
+                session.regenerate()  # Regenerate session ID after login
+                session['user_id'] = username  # Store user ID in session
+                logging.info(f"User {username} logged in successfully.")
+                return redirect(url_for('index'))
+            else:
+                logging.warning(f"Failed login attempt for user {username}.")
+                return render_template('login.html', form=form, error="Invalid credentials")
+        else:
+            logging.warning(f"Failed login attempt for user {username}.")
+            return render_template('login.html', form=form, error="Invalid credentials")
+
+    return render_template('login.html', form=form)
+
 
 @app.route('/logout')
+@login_required
 def logout():
-    session.pop('session_id', None) # Remove the session ID
-    return "Logged out"
+    if 'user_id' in session:
+        logging.info(f"User {session['user_id']} logged out.")
+    session.clear()  # Clear the session on logout
+    return redirect(url_for('index'))  # Redirect to index page
 
-# Example route that requires CSRF protection (e.g., a form submission)
-@app.route('/protected', methods=['POST'])
-#@csrf.exempt #Remove this line if you are using forms.
-def protected():
-    # Process the form data here
-    return "Form submitted successfully!"
+
+@app.route('/')
+def index():
+    if 'user_id' in session:
+        return f"Logged in as {session['user_id']}. <a href='{url_for('logout')}'>Logout</a>"
+    return "<a href='/login'>Login</a> | <a href='/register'>Register</a>"
+
+
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    if request.method == 'POST':
+        bio = request.form.get('bio')
+        cleaned_bio = bleach.clean(bio, tags=bleach.ALLOWED_TAGS, attributes=bleach.ALLOWED_ATTRIBUTES, strip=True)
+        session['bio'] = cleaned_bio  # Store cleaned bio in session (or database)
+        logging.info(f"User {session['user_id']} updated their profile.")
+        return redirect(url_for('profile'))
+    bio = session.get('bio', '')
+    return render_template('profile.html', bio=bio)
+
 
 @app.errorhandler(500)
 def internal_server_error(e):
-    logging.error(f"Internal Server Error: {e}")
-    return "Internal Server Error", 500
+    logging.exception("Internal Server Error")
+    return render_template('500.html'), 500
 
-# Example of logging at different levels
-logging.debug("This is a debug message")
-logging.info("This is an info message")
-logging.warning("This is a warning message")
-logging.error("This is an error message")
-logging.critical("This is a critical message")
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    #  Do NOT use debug=True in production.  It can expose sensitive information.
+    app.run(debug=False)  # Set debug to False for production
 

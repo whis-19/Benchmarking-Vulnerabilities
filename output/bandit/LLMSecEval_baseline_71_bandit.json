@@ -1,0 +1,134 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-06T17:46:49Z",
+  "metrics": {
+    "/tmp/tmpzm7kqn9p.py": {
+      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 4,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 1,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 4,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 89,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 4,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 1,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 4,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 89,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "10 \n11 def secure_extract_tarfile(tarfile_path, destination_dir=\"/tmp/unpack\"):\n12     \"\"\"\n",
+      "col_offset": 57,
+      "end_col_offset": 70,
+      "filename": "/tmp/tmpzm7kqn9p.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 11,
+      "line_range": [
+        11
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "52     # Security: Prevent extraction outside the intended destination directory\n53     if not destination_dir.startswith(\"/tmp/unpack\"):\n54         logging.warning(f\"Destination directory is not within /tmp/unpack.  Using a temporary directory instead.\")\n",
+      "col_offset": 38,
+      "end_col_offset": 51,
+      "filename": "/tmp/tmpzm7kqn9p.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 53,
+      "line_range": [
+        53
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "54         logging.warning(f\"Destination directory is not within /tmp/unpack.  Using a temporary directory instead.\")\n55         destination_dir = tempfile.mkdtemp(prefix=\"secure_unpack_\", dir=\"/tmp\") # Create a secure temporary directory\n56         logging.info(f\"Using temporary directory: {destination_dir}\")\n",
+      "col_offset": 72,
+      "end_col_offset": 78,
+      "filename": "/tmp/tmpzm7kqn9p.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 55,
+      "line_range": [
+        55
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "72                         raise Exception(\"Attempted Path Traversal in Tar File\")\n73                 tar.extractall(path, members, numeric_owner=numeric_owner)\n74 \n",
+      "col_offset": 16,
+      "end_col_offset": 74,
+      "filename": "/tmp/tmpzm7kqn9p.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 22,
+        "link": "https://cwe.mitre.org/data/definitions/22.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "tarfile.extractall used without any validation. Please check and discard dangerous members.",
+      "line_number": 73,
+      "line_range": [
+        73
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b202_tarfile_unsafe_members.html",
+      "test_id": "B202",
+      "test_name": "tarfile_unsafe_members"
+    },
+    {
+      "code": "129             os.remove(tarfile_path)\n130         if 'extracted_dir' in locals() and os.path.exists(extracted_dir) and extracted_dir.startswith(\"/tmp/unpack\"):\n131             shutil.rmtree(extracted_dir, ignore_errors=True) # Remove the extracted directory if it's in /tmp/unpack\n",
+      "col_offset": 102,
+      "end_col_offset": 115,
+      "filename": "/tmp/tmpzm7kqn9p.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 130,
+      "line_range": [
+        130
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    }
+  ]
+}

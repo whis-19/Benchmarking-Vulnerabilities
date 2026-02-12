@@ -1,0 +1,107 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-07T03:57:32Z",
+  "metrics": {
+    "/tmp/tmpp29aubum.py": {
+      "CONFIDENCE.HIGH": 2,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 3,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 137,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 2,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 3,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 137,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "5 import json\n6 import subprocess\n7 import shlex\n",
+      "col_offset": 0,
+      "end_col_offset": 17,
+      "filename": "/tmp/tmpp29aubum.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Consider possible security implications associated with the subprocess module.",
+      "line_number": 6,
+      "line_range": [
+        6
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/blacklists/blacklist_imports.html#b404-import-subprocess",
+      "test_id": "B404",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "163             # Create a subprocess and chroot into the temporary directory.\n164             process = subprocess.Popen(\n165                 command_list,\n166                 cwd=\"/\",  # Important: Set cwd to / *after* chrooting.\n167                 preexec_fn=lambda: os.chroot(chroot_dir),\n168                 user=uid,\n169                 group=gid,\n170                 stdout=subprocess.PIPE,\n171                 stderr=subprocess.PIPE,\n172                 executable=\"/bin/sh\" if os.path.exists(\"/bin/sh\") else None # Specify executable if needed\n173             )\n174 \n",
+      "col_offset": 22,
+      "end_col_offset": 13,
+      "filename": "/tmp/tmpp29aubum.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 164,
+      "line_range": [
+        164,
+        165,
+        166,
+        167,
+        168,
+        169,
+        170,
+        171,
+        172,
+        173
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "194         \"api_key\": \"some_api_key\",\n195         \"admin_password\": \"admin_password\"  # This is just an example.  NEVER store passwords like this.\n196     }\n197 \n198     try:\n199         create_and_write_config(config_file, sensitive_data)\n200 \n",
+      "col_offset": 8,
+      "end_col_offset": 24,
+      "filename": "/tmp/tmpp29aubum.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: 'admin_password'",
+      "line_number": 195,
+      "line_range": [
+        192,
+        193,
+        194,
+        195,
+        196
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    }
+  ]
+}

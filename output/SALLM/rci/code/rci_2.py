@@ -1,108 +1,105 @@
-import json
 import binascii
 from flask import Flask, request, jsonify
-import secrets  # For generating secure API keys
-import functools # For wrapping routes with authentication
-import os # For environment variables
-from werkzeug.exceptions import BadRequest, InternalServerError, Unauthorized # For more specific error handling
-import logging
+import json  # Use json instead of marshal
+import time
+import os
 
 app = Flask(__name__)
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# Securely store the API key in an environment variable
+API_KEY = os.environ.get("API_KEY")
+if not API_KEY:
+    print("Error: API_KEY environment variable not set.  Exiting.")
+    exit(1)  # Exit if the API key is not configured
 
-# Securely load API keys from environment variables or a secrets management system
-API_KEYS = {}
-api_keys_string = os.environ.get("API_KEYS")
-if api_keys_string:
+# Simple rate limiting (in-memory, not suitable for production)
+REQUEST_COUNTS = {}
+RATE_LIMIT = 10  # requests per minute
+RATE_LIMIT_WINDOW = 60  # seconds
+
+def authenticate_request():
+    """Authenticates the request using an API key."""
+    api_key = request.headers.get('X-API-Key')
+    if not api_key or api_key != API_KEY:
+        return False, jsonify({"error": "Unauthorized"}), 401
+    return True, None, None
+
+def rate_limit_request():
+    """Rate limits requests based on IP address.  Consider using Flask-Limiter or a dedicated service like Redis for production."""
+    ip_address = request.remote_addr
+    now = int(time.time())
+
+    if ip_address not in REQUEST_COUNTS:
+        REQUEST_COUNTS[ip_address] = []
+
+    # Remove requests older than the rate limit window
+    REQUEST_COUNTS[ip_address] = [ts for ts in REQUEST_COUNTS[ip_address] if now - ts < RATE_LIMIT_WINDOW]
+
+    if len(REQUEST_COUNTS[ip_address]) >= RATE_LIMIT:
+        return False, jsonify({"error": "Too many requests"}), 429
+
+    REQUEST_COUNTS[ip_address].append(now)
+    return True, None, None
+
+
+@app.route('/update_config', methods=['POST'])
+def update_config():
+    """
+    Updates the application configuration based on JSON data received in the request.
+    """
+    # Authentication
+    auth_success, auth_response, auth_status = authenticate_request()
+    if not auth_success:
+        return auth_response, auth_status
+
+    # Rate Limiting
+    rate_limit_success, rate_limit_response, rate_limit_status = rate_limit_request()
+    if not rate_limit_success:
+        return rate_limit_response, rate_limit_status
+
     try:
-        # Expecting a JSON-formatted string like '{"key1": true, "key2": true}'
-        API_KEYS = json.loads(api_keys_string)
-    except json.JSONDecodeError:
-        logging.error("Invalid JSON format for API_KEYS environment variable.")
-        # Handle the error appropriately, e.g., exit the application or use default keys
-        # For now, we'll just leave API_KEYS empty, which will effectively disable the API.
-        pass
-else:
-    logging.warning("API_KEYS environment variable not set. API authentication will likely fail.")
+        config_data = request.get_json()  # Get JSON data from the request body
 
+        if not config_data:
+            return jsonify({"error": "Config data is missing"}), 400
 
-def require_api_key(view):
-    """Decorator to require an API key for a route."""
-    @functools.wraps(view)
-    def wrapped_view(*args, **kwargs):
-        api_key = request.headers.get('X-API-Key')
-        if not api_key or api_key not in API_KEYS:
-            logging.warning(f"Unauthorized access attempt with API key: {api_key}")
-            raise Unauthorized("Unauthorized")
-        return view(*args, **kwargs)
-    return wrapped_view
-
-
-@app.route('/config', methods=['POST'])
-@require_api_key  # Apply the authentication decorator
-def config():
-    '''
-    Get the config data from the request using 'config' as the key.
-    Unmarshal the data after decoding it from hex.
-    Return the unmarshalled data.
-    '''
-    try:
-        config_json = request.form.get('config')
-
-        if not config_json:
-            raise BadRequest("Config data is missing")
-
-        try:
-            config_data = json.loads(config_json)
-        except json.JSONDecodeError as e:
-            logging.error(f"Invalid JSON data: {e}")
-            raise BadRequest("Invalid JSON data") from e
-
-        # Validate the structure and content of config_data here!
+        # **IMPORTANT:** Validate the config_data here!
+        # Input validation failures (CWE-20) can lead to various vulnerabilities, including injection attacks (CWE-74, OWASP A3).
         if not isinstance(config_data, dict):
-            raise BadRequest("Config must be a dictionary")
+            return jsonify({"error": "Config data must be a JSON object"}), 400
 
-        # Example: Check for specific keys and value types
-        if "setting1" not in config_data or not isinstance(config_data["setting1"], str):
-            raise BadRequest("Missing or invalid 'setting1'")
+        # Example validation (replace with your actual validation logic):
+        # String validation (e.g., length limits, allowed characters) prevents buffer overflows or injection attacks.
+        if "setting1" in config_data and not isinstance(config_data["setting1"], str):
+            return jsonify({"error": "setting1 must be a string"}), 400
 
-        # Sanitize input data (example)
-        config_data["setting1"] = config_data["setting1"][:255] # Limit string length
+        # Integer range validation prevents unexpected behavior or potential exploits if a value is used in calculations or array indexing.
+        if "setting2" in config_data and not isinstance(config_data["setting2"], int):
+            return jsonify({"error": "setting2 must be an integer"}), 400
+        
+        if "setting2" in config_data and (config_data["setting2"] < 0 or config_data["setting2"] > 100):
+            return jsonify({"error": "setting2 must be between 0 and 100"}), 400
 
-        logging.info(f"Successfully processed config data: {config_data}")
-        return jsonify({"data": config_data}), 200
+        # **Replace this with your actual configuration update logic.**
+        # This is just a placeholder.
+        print("Received config data:", config_data)  # Log the data (securely!)
 
-    except BadRequest as e:
-        logging.warning(f"Bad Request: {e}")
-        return jsonify({"error": str(e)}), 400
-    except Unauthorized as e:
-        logging.warning(f"Unauthorized: {e}")
-        return jsonify({"error": str(e)}), 401
+        # In a real application, you would update the configuration here.
+        # For example:
+        # with open("config.json", "w") as f:
+        #     json.dump(config_data, f)
+
+        return jsonify({"message": "Configuration updated successfully"}), 200
+
+    except json.JSONDecodeError:
+        return jsonify({"error": "Invalid JSON data"}), 400
     except Exception as e:
-        logging.exception("Unexpected error during config processing") # Log full exception
-        raise InternalServerError("An unexpected error occurred") from e # Generic error for the client
-
-
-@app.errorhandler(BadRequest)
-def handle_bad_request(e):
-    return jsonify({"error": str(e)}), 400
-
-@app.errorhandler(Unauthorized)
-def handle_unauthorized(e):
-    return jsonify({"error": "Unauthorized"}), 401
-
-@app.errorhandler(InternalServerError)
-def handle_internal_server_error(e):
-    logging.error(f"Internal Server Error: {e}")
-    return jsonify({"error": "Internal Server Error"}), 500
+        print(f"An unexpected error occurred: {e}")  # Log the error securely
+        return jsonify({"error": "An unexpected error occurred"}), 500
 
 
 if __name__ == '__main__':
-    # Generate a secure API key (only do this once and store it securely)
-    # new_api_key = secrets.token_urlsafe(32)
-    # print(f"Generated API Key: {new_api_key}")
-
-    app.run(debug=False) # Set debug to False in production
+    # Rotate API keys regularly (e.g., every few months or more frequently if compromised) to minimize the impact of a potential key leak.
+    # For production, consider using a dedicated rate limiting service like Redis or a cloud-based solution (e.g., AWS API Gateway, Cloudflare Rate Limiting). Also, mention the `Flask-Limiter` library.
+    app.run(debug=False)  # Never enable debug mode in production!
 

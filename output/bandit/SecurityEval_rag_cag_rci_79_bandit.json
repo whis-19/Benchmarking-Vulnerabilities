@@ -1,0 +1,286 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-08T09:20:38Z",
+  "metrics": {
+    "/tmp/tmpjz601x3y.py": {
+      "CONFIDENCE.HIGH": 11,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 12,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 85,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 11,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 12,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 85,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "58         # Execute command in a sandboxed environment (example: using subprocess with limited privileges)\n59         import subprocess\n60         try:\n",
+      "col_offset": 8,
+      "end_col_offset": 25,
+      "filename": "/tmp/tmpjz601x3y.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Consider possible security implications associated with the subprocess module.",
+      "line_number": 59,
+      "line_range": [
+        59
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/blacklists/blacklist_imports.html#b404-import-subprocess",
+      "test_id": "B404",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "66             try:\n67                 subprocess.run([\"id\", \"-u\", sandbox_user], check=True, capture_output=True)\n68             except subprocess.CalledProcessError:\n",
+      "col_offset": 16,
+      "end_col_offset": 91,
+      "filename": "/tmp/tmpjz601x3y.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 67,
+      "line_range": [
+        67
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b607_start_process_with_partial_path.html",
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    },
+    {
+      "code": "66             try:\n67                 subprocess.run([\"id\", \"-u\", sandbox_user], check=True, capture_output=True)\n68             except subprocess.CalledProcessError:\n",
+      "col_offset": 16,
+      "end_col_offset": 91,
+      "filename": "/tmp/tmpjz601x3y.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 67,
+      "line_range": [
+        67
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "68             except subprocess.CalledProcessError:\n69                 subprocess.run([\"sudo\", \"useradd\", \"-M\", sandbox_user], check=True)\n70 \n",
+      "col_offset": 16,
+      "end_col_offset": 83,
+      "filename": "/tmp/tmpjz601x3y.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 69,
+      "line_range": [
+        69
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b607_start_process_with_partial_path.html",
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    },
+    {
+      "code": "68             except subprocess.CalledProcessError:\n69                 subprocess.run([\"sudo\", \"useradd\", \"-M\", sandbox_user], check=True)\n70 \n",
+      "col_offset": 16,
+      "end_col_offset": 83,
+      "filename": "/tmp/tmpjz601x3y.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 69,
+      "line_range": [
+        69
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "71             try:\n72                 subprocess.run([\"id\", \"-g\", sandbox_group], check=True, capture_output=True)\n73             except subprocess.CalledProcessError:\n",
+      "col_offset": 16,
+      "end_col_offset": 92,
+      "filename": "/tmp/tmpjz601x3y.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 72,
+      "line_range": [
+        72
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b607_start_process_with_partial_path.html",
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    },
+    {
+      "code": "71             try:\n72                 subprocess.run([\"id\", \"-g\", sandbox_group], check=True, capture_output=True)\n73             except subprocess.CalledProcessError:\n",
+      "col_offset": 16,
+      "end_col_offset": 92,
+      "filename": "/tmp/tmpjz601x3y.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 72,
+      "line_range": [
+        72
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "73             except subprocess.CalledProcessError:\n74                 subprocess.run([\"sudo\", \"groupadd\", sandbox_group], check=True)\n75 \n",
+      "col_offset": 16,
+      "end_col_offset": 79,
+      "filename": "/tmp/tmpjz601x3y.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 74,
+      "line_range": [
+        74
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b607_start_process_with_partial_path.html",
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    },
+    {
+      "code": "73             except subprocess.CalledProcessError:\n74                 subprocess.run([\"sudo\", \"groupadd\", sandbox_group], check=True)\n75 \n",
+      "col_offset": 16,
+      "end_col_offset": 79,
+      "filename": "/tmp/tmpjz601x3y.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 74,
+      "line_range": [
+        74
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "76             # Execute the command as the sandboxed user\n77             result = subprocess.run(\n78                 [\"sudo\", \"-u\", sandbox_user, command],\n79                 shell=False,  # Important: Avoid shell=True for security\n80                 capture_output=True,\n81                 text=True,\n82                 timeout=10  # Add a timeout to prevent indefinite execution\n83             )\n84 \n",
+      "col_offset": 21,
+      "end_col_offset": 13,
+      "filename": "/tmp/tmpjz601x3y.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 77,
+      "line_range": [
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b607_start_process_with_partial_path.html",
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    },
+    {
+      "code": "78                 [\"sudo\", \"-u\", sandbox_user, command],\n79                 shell=False,  # Important: Avoid shell=True for security\n80                 capture_output=True,\n81                 text=True,\n82                 timeout=10  # Add a timeout to prevent indefinite execution\n83             )\n84 \n85             print(\"Command output:\", result.stdout)\n86             print(\"Command errors:\", result.stderr)\n",
+      "col_offset": 21,
+      "end_col_offset": 13,
+      "filename": "/tmp/tmpjz601x3y.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 79,
+      "line_range": [
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "103     # Example Usage\n104     secret_key = \"my_secret_key\"  # Replace with a strong, randomly generated key\n105     payload = SafePayload(\"ls -l\")  # Example command\n",
+      "col_offset": 17,
+      "end_col_offset": 32,
+      "filename": "/tmp/tmpjz601x3y.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: 'my_secret_key'",
+      "line_number": 104,
+      "line_range": [
+        104
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    }
+  ]
+}

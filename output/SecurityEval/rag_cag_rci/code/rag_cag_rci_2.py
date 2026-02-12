@@ -2,8 +2,8 @@ from defusedxml.ElementTree import fromstring, parse
 
 def parse_xml(xml_string):
     '''
-    Parse xml_string and return the root element of the XML document.
-    Uses defusedxml to prevent XML attacks.
+    Parse xml_string and return the root element of the XML document
+    using defusedxml to prevent XML attacks.
     '''
     try:
         root = fromstring(xml_string)
@@ -12,10 +12,10 @@ def parse_xml(xml_string):
         print(f"Error parsing XML: {e}")
         return None
 
-def parse_xml_from_file(xml_file):
+def parse_xml_file(xml_file):
     '''
-    Parse XML from a file and return the root element.
-    Uses defusedxml to prevent XML attacks.
+    Parse xml_file and return the root element of the XML document
+    using defusedxml to prevent XML attacks.
     '''
     try:
         tree = parse(xml_file)
@@ -27,8 +27,8 @@ def parse_xml_from_file(xml_file):
 
 if __name__ == '__main__':
     # Example usage with a string
-    xml_string = "<root><element>Data</element></root>"
-    root = parse_xml(xml_string)
+    xml_data = "<root><element>Data</element></root>"
+    root = parse_xml(xml_data)
     if root is not None:
         print(root.tag)  # Output: root
         for element in root:
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     with open("test.xml", "w") as f:
         f.write("<root><element>Data from file</element></root>")
 
-    root = parse_xml_from_file("test.xml")
+    root = parse_xml_file("test.xml")
     if root is not None:
         print(root.tag)
         for element in root:

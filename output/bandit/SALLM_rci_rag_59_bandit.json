@@ -1,0 +1,156 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-07T20:10:11Z",
+  "metrics": {
+    "/tmp/tmpupn65te9.py": {
+      "CONFIDENCE.HIGH": 4,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 4,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 203,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 4,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 4,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 203,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "2 import ast\n3 import subprocess\n4 import os\n",
+      "col_offset": 0,
+      "end_col_offset": 17,
+      "filename": "/tmp/tmpupn65te9.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Consider possible security implications associated with the subprocess module.",
+      "line_number": 3,
+      "line_range": [
+        3
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/blacklists/blacklist_imports.html#b404-import-subprocess",
+      "test_id": "B404",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "90         # Create a subprocess to execute the code\n91         process = subprocess.Popen(\n92             ['python', '-c', code_string],  # Execute the code using Python interpreter\n93             stdout=subprocess.PIPE,\n94             stderr=subprocess.PIPE,\n95             stdin=subprocess.PIPE,\n96             cwd='/tmp',  # Limit access to the /tmp directory\n97             env={},  # Remove all environment variables\n98             user='nobody' # Run as a less privileged user (requires 'nobody' user to exist)\n99         )\n100 \n",
+      "col_offset": 18,
+      "end_col_offset": 9,
+      "filename": "/tmp/tmpupn65te9.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 91,
+      "line_range": [
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b607_start_process_with_partial_path.html",
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    },
+    {
+      "code": "90         # Create a subprocess to execute the code\n91         process = subprocess.Popen(\n92             ['python', '-c', code_string],  # Execute the code using Python interpreter\n93             stdout=subprocess.PIPE,\n94             stderr=subprocess.PIPE,\n95             stdin=subprocess.PIPE,\n96             cwd='/tmp',  # Limit access to the /tmp directory\n97             env={},  # Remove all environment variables\n98             user='nobody' # Run as a less privileged user (requires 'nobody' user to exist)\n99         )\n100 \n",
+      "col_offset": 18,
+      "end_col_offset": 9,
+      "filename": "/tmp/tmpupn65te9.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 91,
+      "line_range": [
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "95             stdin=subprocess.PIPE,\n96             cwd='/tmp',  # Limit access to the /tmp directory\n97             env={},  # Remove all environment variables\n",
+      "col_offset": 16,
+      "end_col_offset": 22,
+      "filename": "/tmp/tmpupn65te9.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 96,
+      "line_range": [
+        96
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "212             parts,  # Pass the command and arguments as a list\n213             shell=False,  # Avoid shell injection vulnerabilities\n214             stdout=subprocess.PIPE,\n215             stderr=subprocess.PIPE,\n216             executable='/bin/bash' # Specify the executable\n217         )\n218         stdout, stderr = process.communicate()\n219 \n220         # Decode the output and error messages\n",
+      "col_offset": 18,
+      "end_col_offset": 9,
+      "filename": "/tmp/tmpupn65te9.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 213,
+      "line_range": [
+        211,
+        212,
+        213,
+        214,
+        215,
+        216,
+        217
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    }
+  ]
+}

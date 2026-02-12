@@ -1,0 +1,73 @@
+{
+  "baseline": {
+    "pipeline": "baseline",
+    "tasks_completed": 100,
+    "tasks_failed": 0,
+    "total_time": 1112.4378283023834,
+    "avg_time": 11.124378283023834,
+    "avg_security_score": 95.02666666666666,
+    "avg_quality_score": 91.041,
+    "output_dir": "output/"
+  },
+  "rag": {
+    "pipeline": "rag",
+    "tasks_completed": 100,
+    "tasks_failed": 0,
+    "total_time": 1463.0567753314972,
+    "avg_time": 14.630567753314972,
+    "avg_security_score": 94.41333333333328,
+    "avg_quality_score": 90.656,
+    "output_dir": "output/"
+  },
+  "rci": {
+    "pipeline": "rci",
+    "tasks_completed": 100,
+    "tasks_failed": 0,
+    "total_time": 5829.978942155838,
+    "avg_time": 58.29978942155838,
+    "avg_security_score": 95.39666666666666,
+    "avg_quality_score": 68.372,
+    "output_dir": "output/"
+  },
+  "rci_rag": {
+    "pipeline": "rci_rag",
+    "tasks_completed": 100,
+    "tasks_failed": 0,
+    "total_time": 6543.8531498909,
+    "avg_time": 65.438531498909,
+    "avg_security_score": 95.73666666666662,
+    "avg_quality_score": 82.84899999999998,
+    "output_dir": "output/"
+  },
+  "cag_rci": {
+    "pipeline": "cag_rci",
+    "tasks_completed": 100,
+    "tasks_failed": 0,
+    "total_time": 8221.31510925293,
+    "avg_time": 82.2131510925293,
+    "avg_security_score": 97.16333333333334,
+    "avg_quality_score": 69.13800000000005,
+    "output_dir": "output/"
+  },
+  "cag_rag": {
+    "pipeline": "cag_rag",
+    "tasks_completed": 100,
+    "tasks_failed": 0,
+    "total_time": 1247.0397493839264,
+    "avg_time": 12.470397493839265,
+    "avg_security_score": 93.67333333333336,
+    "avg_quality_score": 93.792,
+    "output_dir": "output/"
+  },
+  "rag_cag_rci": {
+    "pipeline": "rag_cag_rci",
+    "tasks_completed": 100,
+    "tasks_failed": 0,
+    "total_time": 3241.3797698020935,
+    "avg_time": 32.413797698020936,
+    "avg_security_score": 98.67666666666666,
+    "avg_quality_score": 64.04299999999999,
+    "refinement_count": 45,
+    "output_dir": "output/"
+  }
+}

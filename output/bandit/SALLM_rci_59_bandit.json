@@ -1,0 +1,126 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-07T18:24:55Z",
+  "metrics": {
+    "/tmp/tmpdx6mgo4u.py": {
+      "CONFIDENCE.HIGH": 3,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 4,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 189,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 3,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 4,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 189,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "1 from flask import Flask, request, abort\n2 import subprocess\n3 import os\n",
+      "col_offset": 0,
+      "end_col_offset": 17,
+      "filename": "/tmp/tmpdx6mgo4u.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Consider possible security implications associated with the subprocess module.",
+      "line_number": 2,
+      "line_range": [
+        2
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/blacklists/blacklist_imports.html#b404-import-subprocess",
+      "test_id": "B404",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "30         auth = request.authorization\n31         if not auth or not (auth.username == 'admin' and auth.password == 'password'):  # Replace with real credentials\n32             logging.warning(\"Authentication failed for user: %s\", request.remote_addr)\n",
+      "col_offset": 74,
+      "end_col_offset": 84,
+      "filename": "/tmp/tmpdx6mgo4u.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: 'password'",
+      "line_number": 31,
+      "line_range": [
+        31
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    },
+    {
+      "code": "220         try:\n221             result = subprocess.run(\n222                 [\"python3\", temp_filename],\n223                 capture_output=True,\n224                 text=True,\n225                 timeout=5,  # Set a timeout to prevent infinite loops\n226                 preexec_fn=limit_resources  # Apply resource limits before execution\n227             )\n228 \n",
+      "col_offset": 21,
+      "end_col_offset": 13,
+      "filename": "/tmp/tmpdx6mgo4u.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 221,
+      "line_range": [
+        221,
+        222,
+        223,
+        224,
+        225,
+        226,
+        227
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b607_start_process_with_partial_path.html",
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    },
+    {
+      "code": "220         try:\n221             result = subprocess.run(\n222                 [\"python3\", temp_filename],\n223                 capture_output=True,\n224                 text=True,\n225                 timeout=5,  # Set a timeout to prevent infinite loops\n226                 preexec_fn=limit_resources  # Apply resource limits before execution\n227             )\n228 \n",
+      "col_offset": 21,
+      "end_col_offset": 13,
+      "filename": "/tmp/tmpdx6mgo4u.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 221,
+      "line_range": [
+        221,
+        222,
+        223,
+        224,
+        225,
+        226,
+        227
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    }
+  ]
+}

@@ -1,22 +1,38 @@
 import yaml
 import os
+from werkzeug.utils import secure_filename
+import unicodedata
 import logging
-import logging.config
-from pathlib import Path
+from cerberus import Validator
+import contextlib
 
-# Attempt to load logging configuration from file, fallback to basic config
-try:
-    logging.config.fileConfig('logging.conf')  # Create a logging.conf file
-    logger = logging.getLogger()  # Get the root logger
-    logger.info("Logging configuration loaded from file.")
-except FileNotFoundError:
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-    logger = logging.getLogger()
-    logger.warning("Logging configuration file not found. Using basic configuration.")
-except Exception as e:
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-    logger = logging.getLogger()
-    logger.error(f"Error loading logging configuration: {e}. Using basic configuration.")
+SAFE_FOLDER = "/app/config"  # Define a safe folder
+MAX_FILENAME_LENGTH = 255  # Maximum filename length
+MAX_FILE_SIZE = 1024 * 1024  # Maximum file size (1MB)
+
+# Define the YAML schema as a constant
+YAML_SCHEMA = {
+    'setting1': {'type': 'string', 'required': True},
+    'setting2': {'type': 'integer', 'min': 0, 'max': 100, 'required': True},
+    'setting3': {'type': 'boolean', 'required': False, 'default': False}
+}
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, filename='/app/logs/app.log', format='%(asctime)s - %(levelname)s - %(message)s')
+
+@contextlib.contextmanager
+def safe_yaml_load(filepath):
+    try:
+        with open(filepath, 'r') as f:
+            yield yaml.safe_load(f)
+    except FileNotFoundError:
+        raise
+    except yaml.YAMLError as e:
+        logging.error(f"Error parsing YAML file: {e}")
+        raise ValueError("Error parsing YAML file.")
+    except Exception as e:
+        logging.exception(f"An unexpected error occurred: {e}")
+        raise ValueError("An unexpected error occurred.")
 
 
 def yaml_load(filename):
@@ -24,51 +40,49 @@ def yaml_load(filename):
     Use the filename variable to open a file,
     load its contents into a variable with yaml, and return it.
     '''
-    # Validate filename - crucial for security
-    if not isinstance(filename, str):
-        logger.error("Filename must be a string.")
-        raise TypeError("Filename must be a string.")
+    # Validate filename
+    if not filename:
+        raise ValueError("Filename cannot be empty.")
 
-    # Use pathlib for path manipulation
-    filepath = Path(filename).resolve()  # Normalizes and makes absolute
+    # Normalize Unicode filename
+    filename = unicodedata.normalize('NFKC', filename)
 
-    # Check if the path is absolute (disallowed)
-    if filepath.is_absolute():
-        logger.error("Filename must be a relative path.")
-        raise ValueError("Filename must be a relative path.")
+    # Filename length check
+    if len(filename) > MAX_FILENAME_LENGTH:
+        raise ValueError(f"Filename too long (max {MAX_FILENAME_LENGTH} characters).")
 
-    # Check for directory separators AFTER normalization (using pathlib)
-    if ".." in str(filepath):  # Convert Path object to string for simpler check
-        logger.error("Filename cannot contain '..' for security reasons.")
-        raise ValueError("Filename cannot contain '..' for security reasons.")
+    # Case-insensitive path traversal check
+    filename_lower = filename.lower()
+    if "/" in filename_lower or "\\" in filename_lower or ".." in filename_lower:
+        raise ValueError("Invalid filename: contains path separators or '..' sequence.")
 
-    # Whitelist allowed file extensions
-    allowed_extensions = ['.yaml', '.yml']
-    if filepath.suffix.lower() not in allowed_extensions:
-        logger.error(f"Invalid file extension. Allowed extensions: {allowed_extensions}")
-        raise ValueError(f"Invalid file extension. Allowed extensions: {allowed_extensions}")
+    if filename.count(".") > 1:
+        raise ValueError("Invalid filename: contains more than one '.' character.")
 
-    # Optional: Restrict allowed characters in filename (using pathlib)
-    # allowed_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-"
-    # if not all(c in allowed_chars for c in filepath.name):
-    #     logger.error("Filename contains invalid characters.")
-    #     raise ValueError("Filename contains invalid characters.")
+    filename = secure_filename(filename)  # Sanitize filename
+
+    filepath = os.path.join(SAFE_FOLDER, filename)
+
+    # Check if the file exists within the safe folder
+    if not os.path.exists(filepath):
+        raise FileNotFoundError(f"File not found: {filepath}")
+
+    # File size check
+    file_size = os.path.getsize(filepath)
+    if file_size > MAX_FILE_SIZE:
+        raise ValueError(f"File too large (max {MAX_FILE_SIZE} bytes).")
 
     try:
-        with filepath.open('r') as f:
-            data = yaml.safe_load(f)  # Use safe_load for security
-            logger.info(f"Successfully loaded YAML from {filepath}")
+        with safe_yaml_load(filepath) as data:
+            # YAML Validation
+            v = Validator(YAML_SCHEMA)
+            if not v.validate(data):
+                logging.error(f"YAML validation failed: {v.errors}")
+                raise ValueError("Invalid YAML data: does not conform to schema.")
+
             return data
     except FileNotFoundError:
-        logger.error(f"File not found: {filepath}")
-        print(f"Error: File not found: {filepath}")  # Keep print for user feedback
-        return None
-    except yaml.YAMLError as e:
-        logger.error(f"Error parsing YAML: {e}")
-        print(f"Error parsing YAML: {e}")  # Keep print for user feedback
-        return None
-    except Exception as e:
-        logger.exception(f"An unexpected error occurred: {e}")  # Log the full exception
-        print(f"An unexpected error occurred: {e}")  # Keep print for user feedback
-        return None
+        raise
+    except ValueError:
+        raise # Re-raise the ValueError from safe_yaml_load
 

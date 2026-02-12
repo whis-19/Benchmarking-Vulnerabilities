@@ -1,10 +1,41 @@
-import ipaddress
-from flask_wtf.csrf import CSRFProtect
-from datetime import timedelta
+from flask import Flask, redirect, request, abort, url_for, session
+from urllib.parse import urlparse
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+import logging
+import os
+from flask_talisman import Talisman
+import tldextract
+import ipaddress  # For CIDR notation
+from flask_wtf.csrf import CSRFProtect # CSRF Protection
 
-# ... (other code)
+app = Flask(__name__)
+app.secret_key = os.urandom(24)  # Generate a strong secret key
+talisman = Talisman(app,
+                    force_https=True,
+                    hsts_max_age=31536000,
+                    hsts_include_subdomains=True,
+                    hsts_preload=True,
+                    content_security_policy={  # Example CSP
+                        'default-src': '\'self\'',
+                        'script-src': '\'self\' https://example.com',
+                        'style-src': '\'self\' https://example.com',
+                        'img-src': '\'self\' data:'
+                    },
+                    session_cookie_secure=True,  # Ensure cookies are only sent over HTTPS
+                    session_cookie_httponly=True, # Prevent client-side script access
+                    session_cookie_samesite='Lax', # CSRF protection
+                    x_frame_options='SAMEORIGIN', # Clickjacking protection
+                    x_content_type_options='nosniff', # MIME sniffing protection
+                    referrer_policy='strict-origin-when-cross-origin' # Referrer policy
+                    )
 
-csrf = CSRFProtect(app)
+csrf = CSRFProtect(app) # CSRF Protection
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 # Example configuration (load from environment variables or a config file)
 ALLOWED_DOMAINS = os.environ.get("ALLOWED_DOMAINS", "").split(",")
@@ -16,17 +47,26 @@ users = {
     'user2': generate_password_hash('secure_password')
 }
 
-# Configure session lifetime
-app.permanent_session_lifetime = timedelta(minutes=30)  # Example: 30 minutes
-
 limiter = Limiter(
     app,
     key_func=get_remote_address,
     default_limits=["200 per day", "50 per hour"]
 )
 
-# Rate limit failed login attempts per username
-failed_login_attempts = {}  # Store failed attempts per username
+def is_valid_ip(ip_address):
+    """Validates if the provided IP address is valid."""
+    try:
+        ipaddress.ip_address(ip_address)
+        return True
+    except ValueError:
+        return False
+
+def is_ip_in_network(ip_address, network):
+    """Checks if an IP address is within a given network (CIDR notation)."""
+    try:
+        return ipaddress.ip_address(ip_address) in ipaddress.ip_network(network)
+    except ValueError:
+        return False
 
 @app.before_request
 def before_request():
@@ -49,32 +89,18 @@ def before_request():
 
     if ALLOWED_IPS:  # Check if the list is not empty
         client_ip = request.remote_addr
-        try:
-            ip_address = ipaddress.ip_address(client_ip) # Validate IP address
-            allowed = False
-            for allowed_ip_str in ALLOWED_IPS:
-                try:
-                    if '/' in allowed_ip_str:
-                        allowed_network = ipaddress.ip_network(allowed_ip_str, strict=False) # Support CIDR
-                        if ip_address in allowed_network:
-                            allowed = True
-                            break
-                    else:
-                        allowed_ip = ipaddress.ip_address(allowed_ip_str)
-                        if ip_address == allowed_ip:
-                            allowed = True
-                            break
-                except ValueError:
-                    logger.warning(f"Invalid IP address or network in ALLOWED_IPS: {allowed_ip_str}")
-                    continue # Skip invalid entries
-
-            if not allowed:
-                logger.warning(f"Blocked request from IP: {client_ip} to URL: {request.url}")
-                abort(403)  # Forbidden
-
-        except ValueError:
-            logger.warning(f"Invalid client IP address: {client_ip}")
-            abort(400) # Bad Request
+        allowed = False
+        for allowed_ip in ALLOWED_IPS:
+            if '/' in allowed_ip:  # CIDR notation
+                if is_ip_in_network(client_ip, allowed_ip):
+                    allowed = True
+                    break
+            elif is_valid_ip(client_ip) and client_ip == allowed_ip:
+                allowed = True
+                break
+        if not allowed:
+            logger.warning(f"Blocked request from IP: {client_ip} to URL: {request.url}")
+            abort(403)  # Forbidden
 
 @app.route('/login', methods=['GET', 'POST'])
 @limiter.limit("5 per minute")  # Rate limit login attempts
@@ -94,52 +120,71 @@ def login():
 
         if username in users and check_password_hash(users[username], password):
             session['username'] = username
-            session['permanent'] = True # Make the session permanent
-            failed_login_attempts.pop(username, None) # Reset failed attempts
+            session.permanent = True  # Make session permanent
             return redirect(url_for('protected'))
         else:
             logger.warning(f"Failed login attempt for username: {username} from IP: {request.remote_addr}")
-            # Account Lockout Implementation
-            if username not in failed_login_attempts:
-                failed_login_attempts[username] = 0
-            failed_login_attempts[username] += 1
-
-            if failed_login_attempts[username] >= 3:
-                logger.warning(f"Account locked out for username: {username} from IP: {request.remote_addr}")
-                return "Account locked out. Please try again later.", 429 # Too Many Requests
-
-            return "Login failed", 401  # Unauthorized
+            return "Invalid username or password", 401  # Unauthorized - Generic message
     return '''
         <form method="post">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <p><input type=text name=username>
             <p><input type=password name=password>
             <p><input type=submit value=Login>
         </form>
     '''
 
-# Example route requiring CSRF protection
+@app.route('/redirect')
+def redirect_url():
+    target_url = request.args.get('url')
+
+    # 5. Validate and sanitize all URLs
+    if not target_url:
+        return "No URL provided", 400
+
+    try:
+        result = urlparse(target_url)
+        if not all([result.scheme, result.netloc]):
+            logger.warning(f"Invalid URL: {target_url} - Missing scheme or netloc")
+            return "Invalid URL", 400
+
+        # Check if the scheme is allowed (HTTPS is preferred)
+        if result.scheme not in ['http', 'https']:
+            logger.warning(f"Invalid URL: {target_url} - Invalid scheme: {result.scheme}")
+            return "Invalid URL scheme", 400
+
+        # Disallow data: URI scheme
+        if result.scheme == 'data':
+            logger.warning(f"Blocked redirect to data: URI: {target_url}")
+            return "Invalid URL scheme", 400
+
+        # Check if the domain is in the allowlist (if applicable)
+        extracted = tldextract.extract(target_url)
+        domain = extracted.domain + "." + extracted.suffix
+
+        if ALLOWED_DOMAINS and domain not in ALLOWED_DOMAINS:
+            logger.warning(f"Blocked redirect to unauthorized domain: {domain} from URL: {target_url}")
+            return "Unauthorized domain", 403
+
+        logger.info(f"Redirecting to: {target_url}")
+        return redirect(target_url)
+
+    except ValueError as e:  # Catch specific exceptions
+        logger.exception(f"URL parsing error for URL: {target_url}: {e}")
+        return "Invalid URL", 400
+    except Exception as e: # Be more specific here
+        logger.exception(f"Unexpected error processing URL: {target_url}: {e}")
+        return "Invalid URL", 400
+
 @app.route('/protected')
 def protected():
     if 'username' in session:
         return f'Logged in as {session["username"]}'
     return 'You are not logged in'
 
-# Example of setting security headers with Talisman
-@app.after_request
-def set_security_headers(response):
-    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
-    response.headers['X-Content-Type-Options'] = 'nosniff'
-    return response
-
-# ... (other code)
-
 if __name__ == '__main__':
     # 8. Validate SSL/TLS certificates:  This is handled by the web server (e.g., nginx, Apache)
     #    when configuring HTTPS.  Flask itself doesn't directly handle certificate validation.
     #    Ensure your web server is configured to properly validate certificates.
-
-    # HSTS Preload:  Remember to submit your domain to hstspreload.org after configuring HSTS.
 
     # Never run in debug mode in production!
     # app.run(debug=True, ssl_context='adhoc') # Use adhoc for local testing only.  NEVER in production.

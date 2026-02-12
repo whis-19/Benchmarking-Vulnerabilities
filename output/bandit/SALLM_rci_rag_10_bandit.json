@@ -1,0 +1,30 @@
+{
+  "errors": [
+    {
+      "filename": "/tmp/tmpz0zvcrwl.py",
+      "reason": "syntax error while parsing AST from file"
+    }
+  ],
+  "generated_at": "2026-02-07T19:16:11Z",
+  "metrics": {
+    "/tmp/tmpz0zvcrwl.py": {
+      "loc": 65,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 65,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": []
+}

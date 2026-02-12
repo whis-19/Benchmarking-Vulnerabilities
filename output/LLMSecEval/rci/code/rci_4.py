@@ -1,6 +1,5 @@
 import sys
 import os
-import shlex  # For safer argument parsing
 
 def string_to_integer(s):
     """
@@ -12,20 +11,16 @@ def string_to_integer(s):
     Returns:
         The integer representation of the string, or None if the conversion fails.
     """
+    MAX_INPUT_LENGTH = 10  # Limit input string length to prevent DoS
+    if len(s) > MAX_INPUT_LENGTH:
+        print(f"Error: Input string too long. Maximum length is {MAX_INPUT_LENGTH}.")
+        return None
+
     try:
         return int(s)
     except ValueError:
-        print(f"Error: Invalid integer format: {s}")
+        print(f"Error: Invalid integer format: '{s}'")
         return None
-
-def is_safe_string(s):
-    """
-    Checks if a string is safe for printing.  This is a basic example;
-    you might need more sophisticated checks depending on your needs.
-    """
-    # Example: Allow only alphanumeric characters, spaces, and a few punctuation marks
-    allowed_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 .,!?"
-    return all(c in allowed_chars for c in s)
 
 def main():
     """
@@ -38,26 +33,10 @@ def main():
         print("  <index_to_print>: The argument at this index will be printed.")
         return
 
-    index_argument = sys.argv[1]  # The second argument (index 1)
+    index_argument = sys.argv[1]  # The argument that specifies the index
+    index_to_print_str = sys.argv[2] # The argument that specifies the index to print
 
-    # Convert the index argument to an integer safely
-    index_argument_int = string_to_integer(index_argument)
-
-    if index_argument_int is None:
-        return  # Exit if the index conversion failed
-
-    # Check if the index is within the bounds of the command-line arguments
-    if index_argument_int < 0 or index_argument_int >= len(sys.argv):
-        print(f"Error: Index {index_argument_int} is out of bounds.  Must be between 0 and {len(sys.argv) - 1}.")
-        return
-
-    try:
-        index_to_print_str = sys.argv[index_argument_int] # The argument at the index specified by index_argument
-    except IndexError:
-        print(f"Error: Index {index_argument_int} is out of bounds when accessing the index to print.")
-        return
-
-    # Convert the index argument to an integer safely
+    # Convert the index argument to an integer, handling errors
     index_to_print = string_to_integer(index_to_print_str)
 
     if index_to_print is None:
@@ -65,18 +44,14 @@ def main():
 
     # Check if the index is within the bounds of the command-line arguments
     if index_to_print < 0 or index_to_print >= len(sys.argv):
-        print(f"Error: Index {index_to_print} is out of bounds.  Must be between 0 and {len(sys.argv) - 1}.")
-        return
-
-    # Sanitize the output before printing
-    output_to_print = sys.argv[index_to_print]
-
-    if not is_safe_string(output_to_print):
-        print("Error: Output contains unsafe characters.")
+        print(f"Error: Index {index_to_print} is out of range.  Valid range is 0 to {len(sys.argv) - 1}.")
         return
 
     # Print the argument at the specified index
-    print(output_to_print)
+    try:
+        print(sys.argv[index_to_print])
+    except IndexError:
+        print(f"Error: Index {index_to_print} is out of range.")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,154 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-06T18:58:17Z",
+  "metrics": {
+    "/tmp/tmpe6w6m_2i.py": {
+      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 5,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 1,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 5,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 146,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 5,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 1,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 5,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 146,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "22     # Example:\n23     if not os.path.abspath(extract_path).startswith(os.path.abspath(\"/tmp/unpack\")):\n24         raise ValueError(\"Extraction path is not within the allowed safe directory.\")\n",
+      "col_offset": 68,
+      "end_col_offset": 81,
+      "filename": "/tmp/tmpe6w6m_2i.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 23,
+      "line_range": [
+        23
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "71     # Example:\n72     if not os.path.abspath(extract_path).startswith(os.path.abspath(\"/tmp/unpack\")):\n73         raise ValueError(\"Extraction path is not within the allowed safe directory.\")\n",
+      "col_offset": 68,
+      "end_col_offset": 81,
+      "filename": "/tmp/tmpe6w6m_2i.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 72,
+      "line_range": [
+        72
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "89 \n90             zip_ref.extractall(extract_path)\n91 \n",
+      "col_offset": 12,
+      "end_col_offset": 44,
+      "filename": "/tmp/tmpe6w6m_2i.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 22,
+        "link": "https://cwe.mitre.org/data/definitions/22.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "tarfile.extractall used without any validation. Please check and discard dangerous members.",
+      "line_number": 90,
+      "line_range": [
+        90
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b202_tarfile_unsafe_members.html",
+      "test_id": "B202",
+      "test_name": "tarfile_unsafe_members"
+    },
+    {
+      "code": "115     # Validate base_dir:  Ensure it's a safe, controlled location.\n116     if not os.path.abspath(base_dir).startswith(os.path.abspath(\"/tmp/unpack\")):\n117         raise ValueError(\"Base directory is not within the allowed safe directory.\")\n",
+      "col_offset": 64,
+      "end_col_offset": 77,
+      "filename": "/tmp/tmpe6w6m_2i.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 116,
+      "line_range": [
+        116
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "159     # Validate filepath:  Ensure it's within a safe, controlled location.\n160     if not os.path.abspath(filepath).startswith(os.path.abspath(\"/tmp/unpack\")):\n161         raise ValueError(\"Filepath is not within the allowed safe directory.\")\n",
+      "col_offset": 64,
+      "end_col_offset": 77,
+      "filename": "/tmp/tmpe6w6m_2i.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 160,
+      "line_range": [
+        160
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "175     # Create a safe extraction directory\n176     extract_dir = \"/tmp/unpack\"  #  Important:  This MUST be a controlled directory.\n177     os.makedirs(extract_dir, exist_ok=True)\n",
+      "col_offset": 18,
+      "end_col_offset": 31,
+      "filename": "/tmp/tmpe6w6m_2i.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 176,
+      "line_range": [
+        176
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    }
+  ]
+}

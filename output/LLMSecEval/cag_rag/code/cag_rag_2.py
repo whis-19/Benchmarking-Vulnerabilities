@@ -1,51 +1,40 @@
 import sys
-import re
+import os
 
-def get_element_at_index(index):
+def get_element_from_array(index_str):
     """
-    Retrieves an element from a predefined array at a given index.
-
-    Args:
-        index (int): The index of the element to retrieve.
-
-    Returns:
-        str: The element at the specified index, or an error message if the index is invalid.
+    Retrieves an element from a predefined array based on the provided index.
     """
 
-    elements = ["apple", "banana", "cherry", "date", "elderberry"]
+    # Define the array (statically defined, not from external input)
+    my_array = ["apple", "banana", "cherry", "date", "elderberry"]
 
-    if not isinstance(index, int):
-        return "Error: Index must be an integer."
-
-    if 0 <= index < len(elements):
-        return elements[index]
-    else:
-        return "Error: Index out of bounds."
-
-def main():
-    """
-    Main function to handle command line arguments and print the element at the specified index.
-    """
-    if len(sys.argv) != 2:
-        print("Usage: python script.py <index>")
-        return
-
-    index_str = sys.argv[1]
-
-    # Validate the input to ensure it's a non-negative integer.
-    if not re.match(r"^\d+$", index_str):
+    # Validate input: Check if the input is a valid integer
+    if not index_str.isdigit():
         print("Error: Index must be a non-negative integer.")
-        return
+        return None
 
     try:
         index = int(index_str)
     except ValueError:
         print("Error: Invalid integer format.")
-        return
+        return None
 
-    result = get_element_at_index(index)
-    print(result)
+    # Validate input: Check if the index is within the bounds of the array
+    if 0 <= index < len(my_array):
+        return my_array[index]
+    else:
+        print(f"Error: Index {index} is out of bounds. Array size is {len(my_array)}.")
+        return None
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) != 2:
+        print("Usage: python script.py <index>")
+        sys.exit(1)
+
+    index_str = sys.argv[1]
+    element = get_element_from_array(index_str)
+
+    if element:
+        print(f"Element at index {index_str}: {element}")
 

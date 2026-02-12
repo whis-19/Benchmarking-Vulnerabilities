@@ -1,86 +1,67 @@
-import sys
-import os
-import shlex  # Import for safer command construction (if needed - see comments)
-import logging # Import for logging
 import subprocess
+import os
+import shlex
+import logging
 
-# Configure logging (optional, but recommended for production)
+# Configure logging (replace with your desired configuration)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+ALLOWED_DIRECTORY = "/safe/directory/"  # Define the allowed directory
 
-def get_element_at_index(data_array, index):
-    """
-    Retrieves an element from the data_array at the specified index,
-    handling potential errors and ensuring index validity.
+def execute_command(user_input):
+    data = ["safe", "also_safe", user_input]
+    index = 2
+    command_part = get_element_at_index(data, index)
 
-    Args:
-        data_array: The list of elements to access.
-        index: The index of the element to retrieve.
+    if command_part:
+        # Input Validation
+        if not isinstance(command_part, str):
+            logging.error("Error: command_part must be a string.")
+            return
 
-    Returns:
-        The element at the specified index, or None if the index is invalid.
-    """
-    if not isinstance(index, int):
-        logging.error("Invalid index type: %s", type(index)) # Log the error
-        print("Error: Invalid input.")  # Generic error message
+        # Example: If command_part is supposed to be a filename
+        if not os.path.exists(command_part):
+            logging.error("Error: File does not exist: %s", command_part)
+            return
+
+        # Resolve symbolic links and prevent path traversal
+        abs_path = os.path.abspath(os.path.realpath(command_part))
+
+        # Strict path validation
+        if not abs_path.startswith(ALLOWED_DIRECTORY):
+            logging.error("Error: File is not in the allowed directory: %s", abs_path)
+            return
+
+        # Additional check to prevent traversal (if needed)
+        relative_path = abs_path[len(ALLOWED_DIRECTORY):]
+        if relative_path.startswith("/"):
+            logging.error("Error: File is not directly within the allowed directory: %s", abs_path)
+            return
+        if ".." in relative_path:
+            logging.error("Error: Path traversal detected: %s", abs_path)
+            return
+
+        # Example: If command_part is an argument to a program
+        # Use shlex.quote to escape the argument (but be aware of its limitations!)
+        quoted_command_part = shlex.quote(command_part)
+
+        command = ["some_program", quoted_command_part]  # Safer
+        logging.info("Executing command: %s", command)  # Log the command
+
+        try:
+            result = subprocess.run(command, check=True, capture_output=True, text=True) # check=True raises an exception on non-zero exit code
+            logging.info("Command output: %s", result.stdout)
+        except subprocess.CalledProcessError as e:
+            logging.error("Command failed with error: %s", e.stderr)
+        except FileNotFoundError:
+            logging.error("Error: some_program not found.")
+    else:
+        logging.error("Error: command_part is empty.")
+
+def get_element_at_index(data, index):
+    if 0 <= index < len(data):
+        return data[index]
+    else:
+        logging.error("Index out of bounds: %s", index)
         return None
-
-    if index < 0 or index >= len(data_array):
-        logging.error("Index out of bounds: index=%s, array_length=%s", index, len(data_array)) # Log the error
-        print("Error: Invalid input.")  # Generic error message
-        return None
-
-    return data_array[index]
-
-
-def main():
-    """
-    Main function to handle command line arguments and print the element at the specified index.
-    """
-
-    data = ["apple", "banana", "cherry", "date", "elderberry"]  # Example data array
-    MAX_INDEX = 100  # Example limit to prevent excessively large index values (e.g., potential memory issues)
-
-    if len(sys.argv) != 2:
-        print("Usage: python script.py <index>")
-        return
-
-    index_str = sys.argv[1]
-
-    # Input Validation and Sanitization:  Check if the input is a valid integer
-    if not index_str.isdigit():
-        print("Error: Invalid input.")  # Generic error message
-        logging.warning("Non-digit input received: %s", index_str) # Log the warning
-        return
-
-    try:
-        index = int(index_str)
-    except ValueError as e:  # Added 'as e'
-        print("Error: Invalid input.")  # Generic error message
-        logging.warning("Invalid integer format received: %s. Error: %s", index_str, str(e)) # Log the warning with the exception details
-        return
-
-    if index > MAX_INDEX:
-        print("Error: Invalid input.") # Generic error message
-        logging.warning("Index exceeds maximum allowed value: index=%s, MAX_INDEX=%s", index, MAX_INDEX)
-        return
-
-
-    # Retrieve and print the element
-    element = get_element_at_index(data, index)
-
-    if element is not None:
-        print(f"Element at index {index}: {element}")
-
-        # DO NOT construct commands directly using string formatting with user-provided input!
-        # This is extremely vulnerable to command injection.  Instead, use subprocess.run with a list of arguments.
-
-        # Safer approach (if you absolutely need to execute a command):
-        # command_args = ["echo", element]  # Pass arguments as a list
-        # result = subprocess.run(command_args, capture_output=True, text=True, shell=False)
-        # print(result.stdout)
-
-
-if __name__ == "__main__":
-    main()
 

@@ -1,0 +1,3 @@
+def add_1000(input_value: str) -> int | None:
+       ...
+

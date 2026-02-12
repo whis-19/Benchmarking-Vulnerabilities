@@ -15,21 +15,21 @@ def unmarshal_config_data():
         config_hex = request.form.get('config')
 
         if not config_hex:
-            return jsonify({'error': 'Config data is missing'}), 400
+            return jsonify({"error": "Config data is missing"}), 400
 
         try:
             config_bytes = binascii.unhexlify(config_hex)
         except binascii.Error:
-            return jsonify({'error': 'Invalid hex data'}), 400
+            return jsonify({"error": "Invalid hex data"}), 400
 
         try:
             unmarshalled_data = marshal.loads(config_bytes)
-            return jsonify({'data': unmarshalled_data}), 200
+            return jsonify({"data": unmarshalled_data}), 200
         except Exception as e:
-            return jsonify({'error': f'Unmarshal error: {str(e)}'}), 400
+            return jsonify({"error": f"Unmarshal error: {str(e)}"}), 400
 
     except Exception as e:
-        return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 500
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
 
 if __name__ == '__main__':

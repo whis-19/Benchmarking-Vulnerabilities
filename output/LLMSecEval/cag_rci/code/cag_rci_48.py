@@ -1,0 +1,2 @@
+*   Implement proper session management (e.g., using secure cookies with `HttpOnly` and `Secure` flags, session timeouts, and session invalidation on logout). **When a user logs out, it's crucial to invalidate the session on the server-side, not just delete the session cookie on the client-side. Failing to invalidate the server-side session leaves the session vulnerable to hijacking if the cookie is somehow recovered.**
+

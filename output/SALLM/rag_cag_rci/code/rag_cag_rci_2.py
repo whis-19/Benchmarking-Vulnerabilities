@@ -1,31 +1,27 @@
-import marshal
-    import hashlib
-    import hmac
-    import requests
-    import os
+import requests
+import json
+import os
 
-    # Replace with your actual secret key (from the environment variable)
-    SECRET_KEY = os.environ.get("SECRET_KEY")
-    if not SECRET_KEY:
-        print("Error: SECRET_KEY environment variable not set!")
-        exit()
+# Replace with your actual secret key
+SECRET_KEY = os.environ.get("CONFIG_SECRET_KEY")
+if not SECRET_KEY:
+    SECRET_KEY = "YourDevelopmentSecretKey" # NEVER DO THIS IN PRODUCTION
 
-    data_to_marshal = {"message": "Hello, world!", "value": 123}
-    marshalled_data = marshal.dumps(data_to_marshal)
-    hex_encoded_data = marshalled_data.hex()
+config_data = {"setting1": "value1", "setting2": "value2"}  # Replace with your actual config
+config_data_str = json.dumps(config_data) # Convert to JSON string
 
-    def generate_hmac(data: bytes, secret_key: str) -> str:
-        """Generates an HMAC for the given data using the secret key."""
-        key = secret_key.encode('utf-8')
-        hmac_obj = hmac.new(key, data, hashlib.sha256)
-        return hmac_obj.hexdigest()
+hmac_value = hmac.new(SECRET_KEY.encode('utf-8'), config_data_str.encode('utf-8'), hashlib.sha256).hexdigest()
 
-    hmac_value = generate_hmac(marshalled_data, SECRET_KEY)
+url = "http://localhost:5000/get_config"  # Replace with your server URL
 
-    # Send the data and HMAC to the server
-    url = "http://localhost:5000/unmarshal_config"  # Replace with your server URL
-    payload = {'config': hex_encoded_data, 'hmac': hmac_value}
-    response = requests.post(url, data=payload)
+payload = {
+    "config_data": config_data_str,
+    "hmac": hmac_value
+}
 
-    print(response.json())
+headers = {'Content-type': 'application/json'}
+response = requests.post(url, data=json.dumps(payload), headers=headers)
+
+print(response.status_code)
+print(response.json())
 

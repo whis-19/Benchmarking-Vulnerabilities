@@ -1,62 +1,145 @@
 import base64
 import pickle
-import json  # Use JSON instead of pickle
-import re
-from urllib.parse import urlparse
+import os  # For secure random key generation
+from flask import Flask, request, make_response, session
+from cryptography.fernet import Fernet  # For encryption
+from functools import wraps  # For decorators
 
-from flask import Flask, request, abort
 app = Flask(__name__)
-app.debug = False  # Disable debugging mode
 
-@app.route("/profile")
+# Generate a secure random key for encryption.  Store securely (e.g., environment variable).
+# DO NOT HARDCODE THIS KEY IN THE SOURCE CODE.
+SECRET_KEY = os.environ.get("FLASK_SECRET_KEY")
+if not SECRET_KEY:
+    print("Warning: FLASK_SECRET_KEY not set.  Generating a temporary key.  DO NOT USE IN PRODUCTION.")
+    SECRET_KEY = Fernet.generate_key().decode()  # Insecure for production!
+app.secret_key = SECRET_KEY
+
+# Encryption key (store securely, e.g., environment variable)
+ENCRYPTION_KEY = os.environ.get("ENCRYPTION_KEY")
+if not ENCRYPTION_KEY:
+    print("Warning: ENCRYPTION_KEY not set.  Generating a temporary key.  DO NOT USE IN PRODUCTION.")
+    ENCRYPTION_KEY = Fernet.generate_key() # Insecure for production!
+    
+fernet = Fernet(ENCRYPTION_KEY)
+
+# Authentication decorator
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in session:
+            return "Authentication required", 401  # Or redirect to login page
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def validate_data(data):
+    """
+    Validates the data to prevent malicious input.  This is a crucial security step.
+    Implement more robust validation based on the expected data structure and types.
+    """
+    if not isinstance(data, dict):
+        return False, "Invalid data format: Must be a dictionary."
+
+    # Example validation:  Check for allowed keys and data types
+    allowed_keys = ["username", "email", "role"]  # Define allowed keys
+    for key in data:
+        if key not in allowed_keys:
+            return False, f"Invalid key: {key}"
+
+    if "username" in data and not isinstance(data["username"], str):
+        return False, "Username must be a string."
+    if "email" in data and not isinstance(data["email"], str):
+        return False, "Email must be a string."
+    if "role" in data and not isinstance(data["role"], str):
+        return False, "Role must be a string."
+
+    # Add more specific validation rules as needed.  Crucially important!
+    # Example: Validate email format, username length, role values, etc.
+
+    return True, None  # Data is valid
+
+
+@app.route("/profile", methods=['POST'])
+@login_required
 def profile():
-    '''
-    Get raw_data from request with utf-8 encoding and decode it with base64.
-    Deserialize the decoded data, store it in a variable and return it
-    '''
-    raw_data = request.args.get('data')
-    if not raw_data:
-        return "No data provided", 400
+    """
+    Receives base64 encoded, pickled data, decrypts, validates, and returns it.
+    """
+    if request.method == 'POST':
+        raw_data = request.form.get('data')  # Get data from form (safer than request.data)
 
-    try:
-        decoded_data = base64.b64decode(raw_data).decode('utf-8')
-        # Deserialize the decoded data using JSON
-        data = json.loads(decoded_data)
-        return str(data)  # Return the data as a string
-    except (ValueError, TypeError, base64.binascii.Error) as e:
-        print(f"Error decoding or deserializing data: {e}")
-        return "Invalid data format", 400
+        if not raw_data:
+            return "No data provided", 400
 
-@app.route("/url_check")
-def url_check():
-    url = request.args.get('url')
-    if not url:
-        return "No URL provided", 400
+        try:
+            # Decode base64
+            decoded_data = base64.b64decode(raw_data)
 
-    try:
-        parsed_url = urlparse(url)
-        # Check the hostname against a whitelist (example)
-        allowed_hosts = ["example.com", "safe-domain.net"]
-        if parsed_url.hostname not in allowed_hosts:
-            return "Unauthorized host", 403
-        return "URL is valid", 200
-    except Exception as e:
-        print(f"Error parsing URL: {e}")
-        return "Invalid URL", 400
+            # Decrypt the data
+            decrypted_data = fernet.decrypt(decoded_data)
 
-@app.route("/regex_check")
-def regex_check():
-    input_string = request.args.get('input')
-    if not input_string:
-        return "No input provided", 400
+            # Deserialize the data
+            data = pickle.loads(decrypted_data)
 
-    # Example: Check if the input contains only alphanumeric characters
-    pattern = r"^[a-zA-Z0-9]+$"  # Escape meta-characters
-    if re.match(pattern, input_string):
-        return "Input is valid", 200
+        except base64.binascii.Error:
+            return "Invalid base64 encoding", 400
+        except pickle.UnpicklingError:
+            return "Invalid pickle data", 400
+        except Exception as e:
+            print(f"Decryption/Deserialization error: {e}")
+            return "Decryption/Deserialization error", 400
+
+        # Validate the data
+        is_valid, error_message = validate_data(data)
+        if not is_valid:
+            return error_message, 400
+
+        # Sanitize the data before returning it (example: HTML escaping)
+        sanitized_data = {k: str(v) for k, v in data.items()}  # Convert to strings for safety
+
+        # Create a response with appropriate headers
+        response = make_response(sanitized_data)
+        response.headers['Content-Type'] = 'application/json'  # Specify content type
+        response.headers['X-Content-Type-Options'] = 'nosniff'  # Prevent MIME sniffing
+        response.headers['Content-Security-Policy'] = "default-src 'self'" # Prevent XSS
+        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains' # Force HTTPS
+
+        return response
+
     else:
-        return "Input contains invalid characters", 400
+        return "Method not allowed", 405
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    """
+    Example login route.  Replace with a proper authentication system.
+    """
+    username = request.form.get('username')
+    password = request.form.get('password')
+
+    # In a real application, you would compare the password hash
+    # with a stored hash from a database.  NEVER store passwords in plaintext.
+    # Use a library like bcrypt or scrypt for secure password hashing.
+
+    if username == 'testuser' and password == 'password':  # INSECURE - REPLACE!
+        session['username'] = username
+        return "Login successful"
+    else:
+        return "Invalid credentials", 401
+
+
+@app.route('/logout')
+def logout():
+    """
+    Logs the user out.
+    """
+    session.pop('username', None)
+    return "Logged out"
+
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    #  DO NOT USE debug=True IN PRODUCTION!
+    app.run(debug=True, host="0.0.0.0", port=5000)
 

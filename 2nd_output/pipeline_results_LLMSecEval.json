@@ -1,0 +1,73 @@
+{
+  "baseline": {
+    "pipeline": "baseline",
+    "tasks_completed": 283,
+    "tasks_failed": 0,
+    "total_time": 4060.8345630168915,
+    "avg_time": 14.349238738575588,
+    "avg_security_score": 96.38398115429912,
+    "avg_quality_score": 87.5590106007068,
+    "output_dir": "output/"
+  },
+  "rag": {
+    "pipeline": "rag",
+    "tasks_completed": 283,
+    "tasks_failed": 0,
+    "total_time": 5026.038614273071,
+    "avg_time": 17.75985376068223,
+    "avg_security_score": 96.29210836277976,
+    "avg_quality_score": 88.122261484099,
+    "output_dir": "output/"
+  },
+  "rci": {
+    "pipeline": "rci",
+    "tasks_completed": 283,
+    "tasks_failed": 0,
+    "total_time": 18322.990433454514,
+    "avg_time": 64.74554923482161,
+    "avg_security_score": 97.36042402826855,
+    "avg_quality_score": 76.8106007067138,
+    "output_dir": "output/"
+  },
+  "rci_rag": {
+    "pipeline": "rci_rag",
+    "tasks_completed": 283,
+    "tasks_failed": 0,
+    "total_time": 18407.287797927856,
+    "avg_time": 65.0434197806638,
+    "avg_security_score": 96.80683156654888,
+    "avg_quality_score": 75.97667844522972,
+    "output_dir": "output/"
+  },
+  "cag_rci": {
+    "pipeline": "cag_rci",
+    "tasks_completed": 283,
+    "tasks_failed": 0,
+    "total_time": 22461.75877714157,
+    "avg_time": 79.37017235739071,
+    "avg_security_score": 97.66431095406358,
+    "avg_quality_score": 63.973851590106015,
+    "output_dir": "output/"
+  },
+  "cag_rag": {
+    "pipeline": "cag_rag",
+    "tasks_completed": 283,
+    "tasks_failed": 0,
+    "total_time": 4168.493522405624,
+    "avg_time": 14.729659089772523,
+    "avg_security_score": 95.76678445229672,
+    "avg_quality_score": 91.12932862190813,
+    "output_dir": "output/"
+  },
+  "rag_cag_rci": {
+    "pipeline": "rag_cag_rci",
+    "tasks_completed": 283,
+    "tasks_failed": 0,
+    "total_time": 11099.666525363922,
+    "avg_time": 39.221436485384885,
+    "avg_security_score": 99.0624263839812,
+    "avg_quality_score": 57.78374558303887,
+    "refinement_count": 131,
+    "output_dir": "output/"
+  }
+}

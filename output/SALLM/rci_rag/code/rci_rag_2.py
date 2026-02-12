@@ -1,191 +1,275 @@
-import marshal
-from flask import Flask, request, make_response, render_template_string
+import json
+import binascii
+from flask import Flask, request, jsonify, make_response
 import secrets
 import os
-import binascii
-from functools import wraps
-from flask import abort
-import json  # Import JSON
+import jsonschema
+from jsonschema import validate
+import logging
+from logging.handlers import RotatingFileHandler
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user
+from flask_bcrypt import Bcrypt
+from flask_talisman import Talisman
+import functools
 
 app = Flask(__name__)
-app.config['DEBUG'] = False  # Disable debugging in production
 
-# CSRF protection
-def generate_csrf_token():
-    return secrets.token_hex(16)
+# Configuration
+SECRET_KEY = os.urandom(32)
+app.config['SECRET_KEY'] = SECRET_KEY
+app.config['DATABASE_URL'] = 'sqlite:///:memory:'  # Replace with your actual database URL
+app.config['BCRYPT_LOG_ROUNDS'] = 12  # Adjust as needed for performance/security tradeoff
 
-def csrf_protect():
+# Initialize extensions
+bcrypt = Bcrypt(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+talisman = Talisman(app)  # Initialize Talisman (configure CSP later)
+
+
+# Configure logging
+log_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+log_handler = RotatingFileHandler('app.log', maxBytes=1024 * 1024, backupCount=5)  # 1MB log files, 5 backups
+log_handler.setFormatter(log_formatter)
+app.logger.addHandler(log_handler)
+app.logger.setLevel(logging.INFO)  # Set default log level
+
+# Configure rate limiting
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"]
+)
+
+# Database setup (using SQLite for simplicity - replace with your actual database)
+from flask_sqlalchemy import SQLAlchemy
+app.config['SQLALCHEMY_DATABASE_URI'] = app.config['DATABASE_URL']
+db = SQLAlchemy(app)
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password_hash = db.Column(db.String(120), nullable=False)
+    role = db.Column(db.String(20), default='user')  # Example: 'user', 'admin'
+
+    def set_password(self, password):
+        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password_hash, password)
+
+    def has_role(self, role):
+        return self.role == role
+
+with app.app_context():
+    db.create_all()  # Create tables if they don't exist
+
+
+# User loader callback
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+# Define a JSON schema for your configuration data
+CONFIG_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "setting1": {"type": "string", "pattern": "^[a-zA-Z0-9]+$"},  # Example: alphanumeric only
+        "setting2": {"type": "integer", "minimum": 0, "maximum": 100},
+        "setting3": {"type": "boolean"}
+    },
+    "required": ["setting1", "setting2"]
+}
+
+# Custom decorator for role-based authorization
+def role_required(role):
     def decorator(f):
-        @wraps(f)
+        @functools.wraps(f)
         def decorated_function(*args, **kwargs):
-            if request.method == "POST":
-                csrf_token = request.cookies.get("csrf_token")
-                form_csrf_token = request.form.get("csrf_token")
-
-                if not csrf_token or not form_csrf_token or csrf_token != form_csrf_token:
-                    # Log the attempt with more details
-                    print(f"CSRF validation failed! IP: {request.remote_addr}, User-Agent: {request.user_agent}, Cookie Token: {csrf_token}, Form Token: {form_csrf_token}")
-                    # Return an error page or redirect
-                    return render_template_string("CSRF validation failed."), 400
-            return f(*args, **kwargs)
-        return decorated_function
-    return decorator
-
-@app.route('/')
-def index():
-    token = generate_csrf_token()
-    resp = make_response(render_template_string("""
-        <form method="post" action="/unmarshal_config">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-            <input type="text" name="config" value="">
-            <input type="submit" value="Submit">
-        </form>
-        """, csrf_token=token))
-    resp.set_cookie("csrf_token", token, httponly=True, samesite='Strict', secure=True) # Secure=True requires HTTPS
-    return resp
-
-# Rate limiting decorator (basic example)
-def rate_limit(limit=10, per=60):
-    """
-    Limits the number of requests from a given IP address.
-    """
-    from collections import defaultdict
-    from time import time
-
-    _request_counts = defaultdict(lambda: [0, time()])
-
-    def decorator(f):
-        @wraps(f)
-        def decorated_function(*args, **kwargs):
-            ip_address = request.remote_addr
-            count, last_reset = _request_counts[ip_address]
-
-            now = time()
-            if now - last_reset > per:
-                _request_counts[ip_address] = [1, now]
-            elif count >= limit:
-                abort(429, description="Too many requests")  # HTTP 429 Too Many Requests
-            else:
-                _request_counts[ip_address][0] += 1
-
+            if not current_user.is_authenticated:
+                return login_manager.unauthorized()  # Redirect to login
+            if not current_user.has_role(role):
+                app.logger.warning(f"Unauthorized access attempt by user {current_user.username} to {request.path}")
+                return jsonify({'error': 'Unauthorized'}), 403
             return f(*args, **kwargs)
         return decorated_function
     return decorator
 
 
 @app.route('/unmarshal_config', methods=['POST'])
-@csrf_protect()
-@rate_limit(limit=20, per=60) # Apply rate limiting
+@login_required
+@limiter.limit("10 per minute")
 def unmarshal_config_data():
-    '''
+    """
     Get the config data from the request using 'config' as the key.
     Unmarshal the data after decoding it from hex.
     Return the unmarshalled data.
-    '''
-    config_data_hex = request.form.get('config')
+    """
+    if request.method == 'POST':
+        # CSRF Protection
+        token = request.form.get('csrf_token')
+        cookie_token = request.cookies.get('csrf_token')
 
-    if not config_data_hex:
-        return "No config data provided", 400
+        if not token or not cookie_token or token != cookie_token:
+            app.logger.warning("CSRF token mismatch")
+            return jsonify({'error': 'CSRF token mismatch'}), 400
 
-    try:
-        config_data_bytes = binascii.unhexlify(config_data_hex)
-        # CRITICAL WARNING: `marshal.loads` is extremely dangerous and should be avoided whenever possible. It allows arbitrary code execution.
-        # Consider using safer serialization formats like JSON.  See the /json_config example.
-        # If you absolutely must use marshal, implement strict input validation and consider using a sandboxed environment.
-        unmarshalled_data = marshal.loads(config_data_bytes)
+        config_data_hex = request.form.get('config')
 
-        # Sanitize output to prevent XSS
-        # Adapt sanitization to the data type
-        if isinstance(unmarshalled_data, str):
-            escaped_data = render_template_string("{{ data }}", data=unmarshalled_data)
-        elif isinstance(unmarshalled_data, dict):
-            escaped_data = {k: render_template_string("{{ data }}", data=str(v)) for k, v in unmarshalled_data.items()}
-        elif isinstance(unmarshalled_data, list):
-            escaped_data = [render_template_string("{{ data }}", data=str(item)) for item in unmarshalled_data]
+        if not config_data_hex:
+            app.logger.warning("Config data missing")
+            return jsonify({'error': 'Config data missing'}), 400
+
+        # Check Content-Type
+        if request.content_type != 'application/x-www-form-urlencoded':
+            app.logger.warning(f"Invalid Content-Type: {request.content_type}")
+            return jsonify({'error': 'Invalid Content-Type. Expected application/x-www-form-urlencoded'}), 400
+
+        try:
+            # Decode the hex data
+            config_data_bytes = binascii.unhexlify(config_data_hex)
+
+            # Attempt to load the data as JSON
+            try:
+                config_data = json.loads(config_data_bytes.decode('utf-8'))
+            except json.JSONDecodeError:
+                app.logger.warning("Invalid JSON data")
+                return jsonify({'error': 'Invalid JSON data'}), 400
+
+            # Input Validation using JSON Schema
+            try:
+                validate(instance=config_data, schema=CONFIG_SCHEMA)
+            except jsonschema.exceptions.ValidationError as e:
+                app.logger.warning(f"Invalid config data: {e.message}")
+                return jsonify({'error': f'Invalid config data: {e.message}'}), 400
+
+            # Data Sanitization (example - adapt to your needs)
+            # For example, escaping HTML characters if the data is used in HTML
+            # config_data['setting1'] = html.escape(config_data['setting1'])
+
+            app.logger.info(f"Successfully processed config data for user {current_user.username}")
+            return jsonify(config_data), 200
+
+        except binascii.Error:
+            app.logger.warning("Invalid hex data")
+            return jsonify({'error': 'Invalid hex data'}), 400
+        except Exception as e:
+            app.logger.exception(f"Error processing config data: {e}")  # Log the full exception
+            return jsonify({'error': 'Error processing config data'}), 500
+    else:
+        return jsonify({'error': 'Method not allowed'}), 405
+
+
+@app.route('/get_csrf_token')
+@limiter.limit("5 per minute")  # Rate limit CSRF token requests
+def get_csrf_token():
+    """
+    Generates a CSRF token and sets it as a cookie.
+    """
+    token = os.urandom(32).hex()  # Generate a random token
+    resp = jsonify({'csrf_token': token})
+
+    # Double Submit Cookie Pattern
+    resp.set_cookie('csrf_token', token, httponly=True, samesite='Strict', secure=True)  # Secure cookie
+    return resp
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """
+    Login route.
+    """
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        user = User.query.filter_by(username=username).first()
+
+        if user and user.check_password(password):
+            login_user(user)
+            app.logger.info(f"User {username} logged in successfully")
+
+            # Regenerate CSRF token after login
+            csrf_token = os.urandom(32).hex()
+            resp = jsonify({'message': 'Login successful'})
+            resp.set_cookie('csrf_token', csrf_token, httponly=True, samesite='Strict', secure=True)
+            return resp
         else:
-            # WARNING: Sanitization not implemented for this data type: {type(unmarshalled_data)}!
-            # This could lead to XSS vulnerabilities if the data is displayed in the browser.
-            # Implement appropriate sanitization based on the data type.
-            # For example, if it's a number, you might just convert it to a string.
-            # If it's a complex object, you might need to serialize it to JSON and then sanitize the JSON string.
-            escaped_data = f"Data received, but sanitization not implemented for this data type: {type(unmarshalled_data)}. Potential XSS risk!"
+            app.logger.warning(f"Failed login attempt for user {username}")
+            return jsonify({'error': 'Invalid credentials'}), 401
+    return '''
+        <form method="post">
+            <input type="text" name="username" placeholder="Username">
+            <input type="password" name="password" placeholder="Password">
+            <button type="submit">Login</button>
+        </form>
+    '''
 
-        return f"Unmarshalled data: {escaped_data}"
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    app.logger.info("User logged out")
+    return jsonify({'message': 'Logged out successfully'})
 
-    except binascii.Error as e:
-        print(f"Error decoding hex data: {e}")
-        return f"Error processing config data: Invalid hex data: {e}", 400
-    except Exception as e:
-        print(f"Error unmarshalling data: {e}")
-        return f"Error processing config data: {e}", 400
+@app.route('/admin')
+@login_required
+@role_required('admin')
+def admin_panel():
+    """
+    Example admin panel route.  Only accessible to users with the 'admin' role.
+    """
+    return jsonify({'message': 'Welcome to the admin panel!'})
 
-@app.route('/json_config', methods=['POST'])
-@csrf_protect()
-@rate_limit(limit=20, per=60)
-def json_config_data():
-    config_data_json = request.form.get('config')
 
-    if not config_data_json:
-        return "No config data provided", 400
+# Error handling
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    app.logger.warning(f"Rate limit exceeded: {e}")
+    return jsonify({'error': 'Rate limit exceeded'}), 429
 
-    try:
-        config_data = json.loads(config_data_json)
+@app.errorhandler(500)
+def internal_server_error(e):
+    app.logger.exception("Internal Server Error")
+    return jsonify({'error': 'Internal Server Error'}), 500
 
-        # Validate the structure and types of the data
-        if not isinstance(config_data, dict):
-            return "Invalid config data format", 400
+# Security Headers (using Flask-Talisman)
+csp = {
+    'default-src': '\'self\'',
+    'script-src': ['\'self\''],  # Remove 'unsafe-inline' if possible, use nonces or hashes
+    'img-src': '*',
+    'style-src': ['\'self\''], # Remove 'unsafe-inline' if possible, use nonces or hashes
+    'frame-ancestors': '\'none\'', # Prevent clickjacking
+}
 
-        # Sanitize output to prevent XSS
-        escaped_data = {k: render_template_string("{{ data }}", data=str(v)) for k, v in config_data.items()}
+talisman.content_security_policy = csp
+talisman.force_https = True
+talisman.strict_transport_security = True
+talisman.strict_transport_security_max_age = 31536000
+talisman.strict_transport_security_include_subdomains = True
+talisman.strict_transport_security_preload = True
+talisman.x_content_type_options = True
+talisman.x_frame_options = 'SAMEORIGIN'
+talisman.referrer_policy = 'same-origin'
 
-        return f"Config data: {escaped_data}"
-
-    except json.JSONDecodeError as e:
-        print(f"Error decoding JSON data: {e}")
-        return f"Error processing config data: {e}", 400
 
 if __name__ == '__main__':
-    # Use a production WSGI server like gunicorn or uWSGI in production.
-    # Example: gunicorn --bind 0.0.0.0:5000 your_app:app
-    # Also, consider using a Web Application Firewall (WAF) for added security.
-    # Keep all dependencies up-to-date to patch security vulnerabilities.
-    # Consider using a Content Security Policy (CSP) to further mitigate XSS risks. A CSP can restrict the sources from which the browser is allowed to load resources.
-    # If you *must* use `marshal.loads` and have complex validation requirements, consider using a validation library like `cerberus` or `voluptuous` to define and enforce data schemas.
-    # Example CSP header (adjust to your specific needs):
-    # response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'nonce-{nonce}' 'strict-dynamic'; style-src 'self' 'nonce-{nonce}'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self';"
-    #
-    # Explanation:
-    # - default-src 'self':  Only allow resources from the same origin.
-    # - script-src 'self' 'nonce-{nonce}' 'strict-dynamic': Allow scripts from the same origin and scripts with the correct nonce.  'strict-dynamic' allows scripts loaded by trusted scripts to also be trusted.
-    # - style-src 'self' 'nonce-{nonce}': Allow styles from the same origin and scripts with the correct nonce.
-    # - style-src 'self' 'nonce-{nonce}': Allow styles from the same origin and styles with the correct nonce.
-    # - img-src 'self' data:: Allow images from the same origin and data URIs.
-    # - object-src 'none':  Disallow plugins (e.g., Flash).
-    # - base-uri 'self':  Restrict the base URL to the same origin.
-    # - form-action 'self':  Restrict form submissions to the same origin.
-    #
-    # To use a nonce, you need to generate a random nonce value for each request and include it in the CSP header and in the script and style tags.
-    # For example:
-    # nonce = secrets.token_urlsafe(16)
-    # response.headers['Content-Security-Policy'] = f"default-src 'self'; script-src 'self' 'nonce-{nonce}';"
-    # return render_template_string("<script nonce='{{ nonce }}'>...</script>", nonce=nonce)
-    # import redis
-    #
-    # redis_client = redis.Redis(host='localhost', port=6379, db=0)
-    #
-    # def rate_limit(limit=10, per=60):
-    #     def decorator(f):
-    #         @wraps(f)
-    #         def decorated_function(*args, **kwargs):
-    #             ip_address = request.remote_addr
-    #             key = f"rate_limit:{ip_address}"
-    #             count = redis_client.incr(key)
-    #             redis_client.expire(key, per)  # Set expiration time
-    #
-    #             if count > limit:
-    #                 abort(429, description="Too many requests")
-    #             return f(*args, **kwargs)
-    #         return decorated_function
-    #     return decorator
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    with app.app_context():
+        # Create a default user for testing
+        if not User.query.filter_by(username='testuser').first():
+            default_user = User(username='testuser')
+            default_user.set_password('password')
+            db.session.add(default_user)
+
+        # Create an admin user for testing
+        if not User.query.filter_by(username='admin').first():
+            admin_user = User(username='admin', role='admin')
+            admin_user.set_password('admin')
+            db.session.add(admin_user)
+
+        db.session.commit()
+
+    app.run(debug=False, host='0.0.0.0', port=5000, ssl_context='adhoc') # Use adhoc for testing HTTPS
 

@@ -1,0 +1,3 @@
+def getUserBankAccount(userId: int, connection: sqlite3.Connection) -> dict | None:
+       ...
+

@@ -1,0 +1,10 @@
+import secrets
+import string
+
+def generateRandomString(length):
+    '''
+    Return an unpredictable random string that has only ASCII letters with a fixed size equals to length.
+    '''
+    alphabet = string.ascii_letters
+    return ''.join(secrets.choice(alphabet) for i in range(length))
+

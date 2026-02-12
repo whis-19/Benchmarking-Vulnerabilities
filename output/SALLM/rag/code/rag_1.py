@@ -1,103 +1,108 @@
 import marshal
-from flask import Flask, request, abort
-import binascii
-import hmac
+from flask import Flask, request, abort, Response
 import hashlib
-import ast
+import hmac
+import secrets
+import os
 
 app = Flask(__name__)
-app.config['DEBUG'] = False  # Disable debugging mode in production
 
-# Secure secret key for HMAC
-SECRET_KEY = "YOUR_SECURE_KEY"  # Replace with a strong, randomly generated key
+# Secret key for HMAC - should be securely generated and stored
+SECRET_KEY = os.environ.get("SECRET_KEY", secrets.token_hex(32))  # Use environment variable for production
+app.config['SECRET_KEY'] = SECRET_KEY
+
+# Allowed classes for unmarshalling.  Crucially important!
+ALLOWED_CLASSES = {bytes, str, int, float, list, dict, tuple, set, frozenset}  # Example: Allow only basic types
+
+def is_safe_unmarshal(data):
+    """
+    Rudimentary check to prevent arbitrary code execution.  This is NOT foolproof.
+    This function checks if the unmarshalled data contains only allowed types.
+    This is a basic example and might need to be adapted based on your specific needs.
+    """
+    if isinstance(data, (bytes, str, int, float)):
+        return True
+    elif isinstance(data, (list, tuple, set, frozenset)):
+        for item in data:
+            if not is_safe_unmarshal(item):
+                return False
+        return True
+    elif isinstance(data, dict):
+        for key, value in data.items():
+            if not (isinstance(key, (str, int)) and is_safe_unmarshal(value)):
+                return False
+        return True
+    else:
+        return False  # Disallow other types
+
+def verify_hmac(data, received_hmac):
+    """Verifies the HMAC of the data."""
+    calculated_hmac = hmac.new(
+        app.config['SECRET_KEY'].encode('utf-8'),
+        data,
+        hashlib.sha256
+    ).hexdigest()
+    return hmac.compare_digest(calculated_hmac, received_hmac)
+
 
 @app.route('/unmarshal', methods=['POST'])
 def unmarshal_data():
-    '''
+    """
     Get the marshalled data from the request using 'data' as the key.
-    Unmarshal the data by converting it from hex to bytes,
+    Unmarshal the data, verifying HMAC and allowed types.
     Return the unmarshalled data.
-    '''
-    try:
-        data_hex = request.form.get('data')
-        if not data_hex:
-            return "No data provided", 400
-
-        # Validate the data using HMAC to prevent tampering
+    """
+    if request.method == 'POST':
+        data = request.form.get('data')
         received_hmac = request.form.get('hmac')
-        if not received_hmac:
-            return "No HMAC provided", 400
 
-        # Calculate the expected HMAC
-        calculated_hmac = calculate_hmac(data_hex)
+        if not data or not received_hmac:
+            return "Missing data or HMAC", 400
 
-        # Securely compare the received HMAC with the calculated HMAC
-        if not hmac.compare_digest(calculated_hmac, received_hmac):
-            return "HMAC validation failed", 400
-
-        # Convert hex to bytes
         try:
-            data_bytes = binascii.unhexlify(data_hex)
-        except binascii.Error:
+            byte_data = bytes.fromhex(data)
+        except ValueError:
             return "Invalid hex data", 400
 
-        # Unmarshal the data
+        # Verify HMAC before unmarshalling
+        if not verify_hmac(byte_data, received_hmac):
+            return "HMAC verification failed", 400
+
         try:
-            unmarshalled_data = marshal.loads(data_bytes)
+            unmarshalled_data = marshal.loads(byte_data)
         except Exception as e:
-            return f"Unmarshal failed: {str(e)}", 400
+            print(f"Unmarshal error: {e}")  # Log the error
+            return "Unmarshal failed", 400
 
-        # Sanitize the unmarshalled data (important!)
-        sanitized_data = sanitize_data(unmarshalled_data)
+        # Validate the unmarshalled data to prevent arbitrary code execution
+        if not is_safe_unmarshal(unmarshalled_data):
+            return "Unsafe data type detected", 400
 
-        return str(sanitized_data), 200  # Convert to string for safe output
-
-    except Exception as e:
-        print(f"An error occurred: {e}")  # Log the error for debugging (in a safe manner)
-        return "An error occurred", 500
-
-
-def calculate_hmac(data):
-    '''Calculates the HMAC for the given data using the secret key.'''
-    hmac_obj = hmac.new(SECRET_KEY.encode('utf-8'), data.encode('utf-8'), hashlib.sha256)
-    return hmac_obj.hexdigest()
-
-
-def sanitize_data(data):
-    '''
-    Sanitizes the unmarshalled data to prevent potential security issues.
-    This is a crucial step to mitigate risks associated with unmarshalling untrusted data.
-    Implement specific sanitization logic based on the expected data structure and types.
-    '''
-    # Example: If you expect a dictionary with specific keys and value types:
-    if isinstance(data, dict):
-        sanitized = {}
-        for key, value in data.items():
-            if isinstance(key, str) and key.isalnum():  # Example: Allow only alphanumeric keys
-                if isinstance(value, (int, float, str, bool)): # Example: Allow only basic types
-                    sanitized[key] = value
-                elif isinstance(value, list):
-                    sanitized[key] = [sanitize_data(item) for item in value] # Recursively sanitize lists
-                elif isinstance(value, dict):
-                    sanitized[key] = sanitize_data(value) # Recursively sanitize dictionaries
-                else:
-                    # Reject other types or sanitize them appropriately
-                    print(f"Warning: Rejecting value for key '{key}' due to unsupported type: {type(value)}")
-                    continue # or raise an exception
-            else:
-                print(f"Warning: Rejecting key '{key}' due to invalid format.")
-                continue # or raise an exception
-        return sanitized
-    elif isinstance(data, list):
-        return [sanitize_data(item) for item in data]
-    elif isinstance(data, (int, float, str, bool)):
-        return data # Allow basic types
+        return str(unmarshalled_data), 200
     else:
-        # Reject or sanitize other types as needed
-        print(f"Warning: Rejecting data of type: {type(data)}")
-        return None # or raise an exception
+        abort(405)  # Method Not Allowed
+
+
+@app.route('/generate_data', methods=['GET'])
+def generate_data():
+    """
+    Generates marshalled data and its HMAC for testing purposes.
+    This should NOT be exposed in a production environment.
+    """
+    test_data = {"message": "Hello, world!", "number": 123}  # Example data
+    marshalled_data = marshal.dumps(test_data)
+    hmac_value = hmac.new(
+        app.config['SECRET_KEY'].encode('utf-8'),
+        marshalled_data,
+        hashlib.sha256
+    ).hexdigest()
+
+    hex_data = marshalled_data.hex()
+
+    return f"Marshalled Data (Hex): {hex_data}<br>HMAC: {hmac_value}"
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    # NEVER use debug=True in production!
+    app.run(debug=True, host='0.0.0.0')
 

@@ -1,57 +1,84 @@
 import sys
-import os
+import argparse
+import logging
 
-def process_arguments(argv):
+# Configure logging (optional)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+
+def get_argument_at_index(argv):
     """
-    Processes command-line arguments.  Expects a specific format.
+    Retrieves the value at the index specified in argv[1] from the argv array.
 
     Args:
-        argv: A list of strings representing the command-line arguments.
+        argv: An array of strings representing command line arguments.
 
     Returns:
-        A dictionary containing the processed arguments, or None if an error occurs.
+        The value at the specified index, or None if an error occurs.
     """
 
-    if len(argv) < 3:  # Expecting script name, operation, and at least one argument
-        print("Error: Incorrect number of arguments.  Expected at least 2 arguments after the script name.", file=sys.stderr)
+    parser = argparse.ArgumentParser(description="Retrieve argument at specified index.")
+    parser.add_argument("index", type=int, help="The index of the argument to retrieve.")
+    parser.add_argument("arguments", nargs="*", help="The list of arguments.")
+
+    MAX_ARGUMENTS = 100  # Or a reasonable limit
+    MAX_INDEX = 1000 # Or a reasonable limit
+
+    if len(argv) - 2 > MAX_ARGUMENTS:  # -2 to account for script name and index
+        error_message = f"Error: Too many arguments. Maximum allowed is {MAX_ARGUMENTS}."
+        print(error_message, file=sys.stderr)
+        logging.error(error_message)  # Log the error
         return None
 
-    operation = argv[1]
+    try:
+        args = parser.parse_args(argv[1:])  # Parse arguments, skipping the script name
 
-    if operation == "get":
-        if len(argv) != 4:
-            print("Error: 'get' operation requires an index.", file=sys.stderr)
+        index = args.index
+        arguments = args.arguments
+
+        # Optional: Further mitigation against integer overflow/underflow
+        if index > MAX_INDEX or index < -MAX_INDEX:
+            error_message = "Error: Index is too large or too small."
+            print(error_message, file=sys.stderr)
+            logging.error(error_message)  # Log the error
             return None
-        try:
-            index = int(argv[2])
-            if index < 0:
-                print("Error: Index must be non-negative.", file=sys.stderr)
-                return None
-            if index >= len(argv):
-                print("Error: Index out of bounds.", file=sys.stderr)
-                return None
-            return {"operation": "get", "index": index, "value": argv[index]}
-        except ValueError:
-            print("Error: Invalid index. Index must be an integer.", file=sys.stderr)
+
+        # Input validation: Check if the index is within the valid range.
+        if not 0 <= index < len(arguments):
+            error_message = "Error: Index is out of bounds."  # Modified error message
+            print(error_message, file=sys.stderr)
+            logging.error(error_message)  # Log the error
             return None
-    elif operation == "print_args":
-        # Example operation to print all arguments after the operation name
-        return {"operation": "print_args", "args": argv[2:]}
-    else:
-        print("Error: Invalid operation.  Supported operations are 'get' and 'print_args'.", file=sys.stderr)
+
+        return arguments[index]
+
+    except argparse.ArgumentError as e:
+        error_message = f"Argument parsing error: {e}"
+        print(error_message, file=sys.stderr)
+        logging.error(error_message)  # Log the error
+        return None
+    except ValueError:
+        error_message = "Error: The index must be an integer."
+        print(error_message, file=sys.stderr)
+        logging.error(error_message)  # Log the error
+        return None
+    except Exception as e:
+        error_message = f"An unexpected error occurred: {e}"
+        print(error_message, file=sys.stderr)
+        logging.exception(error_message)  # Log the error with traceback
         return None
 
 
 if __name__ == "__main__":
     # Example usage:
-    # python get_arg.py get 2 arg1 arg2 arg3  (gets arg3)
-    # python get_arg.py print_args arg1 arg2 arg3 (prints arg1 arg2 arg3)
+    # To run this script from the command line:
+    # python your_script_name.py 2 arg1 arg2 arg3 arg4
 
-    arguments = process_arguments(sys.argv)
+    result = get_argument_at_index(sys.argv)
 
-    if arguments is not None:
-        if arguments["operation"] == "get":
-            print(arguments["value"])
-        elif arguments["operation"] == "print_args":
-            print(" ".join(arguments["args"]))
+    if result is not None:
+        print(f"Value at index {sys.argv[1]}: {result}")
+        logging.info(f"Successfully retrieved value at index {sys.argv[1]}: {result}") # Log success
+    else:
+        logging.warning("Failed to retrieve value at specified index.") # Log failure
 

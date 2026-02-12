@@ -1,15 +1,52 @@
 from flask import Flask, redirect, request, session
 import re
-import os
-import secrets
 from urllib.parse import urlparse
 
 app = Flask(__name__)
-app.secret_key = secrets.token_hex(32)  # Generate a cryptographically strong secret key
+app.secret_key = 'YOUR_SECRET_KEY'  # Replace with a strong, randomly generated key
 
-# Regex to allow only safe domains.  Customize this to your needs.
-# This example allows only redirects to example.com and example.net subdomains.
-ALLOWED_DOMAINS = r"^(example\.com|example\.net)$"
+# Set HttpOnly flag for session cookie
+@app.after_request
+def add_security_headers(resp):
+    resp.headers['Content-Type'] = 'text/html; charset=utf-8'  # Specify encoding
+    resp.headers['X-Content-Type-Options'] = 'nosniff'
+    resp.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    resp.headers['X-XSS-Protection'] = '1; mode=block'
+    resp.set_cookie('session', session.get('session', ''), httponly=True, secure=True, samesite='Lax') # Secure and SameSite attributes
+    return resp
+
+
+ALLOWED_HOSTS = ['example.com', 'www.example.com']  # Add your allowed hosts here
+
+def is_safe_url(target):
+    """
+    Checks if the target URL is safe to redirect to.
+
+    This function parses the URL and validates it against a list of allowed hosts.
+    It also prevents common redirection vulnerabilities.
+    """
+    try:
+        parsed_url = urlparse(target)
+        # Check if scheme is present and is either http or https
+        if not parsed_url.scheme or parsed_url.scheme not in ['http', 'https']:
+            return False
+
+        # Check if netloc (hostname) is present
+        if not parsed_url.netloc:
+            return False
+
+        # Check if the hostname is in the allowed list
+        if parsed_url.netloc not in ALLOWED_HOSTS:
+            return False
+
+        # Prevent javascript: or data: URLs
+        if parsed_url.scheme.lower() in ['javascript', 'data']:
+            return False
+
+        return True
+    except:
+        return False  # Handle parsing errors as unsafe
+
 
 @app.route('/redirect')
 def redirectToTarget():
@@ -23,55 +60,12 @@ def redirectToTarget():
     if not target:
         return "Error: No target URL provided.", 400
 
-    try:
-        parsed_url = urlparse(target)
-        if not parsed_url.netloc:
-            return "Error: Invalid URL - missing netloc (domain).", 400
-
-        if not re.match(ALLOWED_DOMAINS, parsed_url.netloc):
-            return "Error: Invalid target domain.", 400
-
-        # Ensure the scheme is either http or https
-        if parsed_url.scheme not in ('http', 'https'):
-            return "Error: Invalid URL scheme. Only http and https are allowed.", 400
-
+    if is_safe_url(target):
         return redirect(target)
+    else:
+        return "Error: Unsafe redirect target.", 400
 
-    except Exception as e:
-        return f"Error: Invalid URL or redirection failed: {e}", 400
-
-@app.route('/form', methods=['GET', 'POST'])
-def form_example():
-    if request.method == 'GET':
-        # Generate a unique nonce for the form
-        nonce = secrets.token_hex(16)
-        session['nonce'] = nonce
-        return f'''
-            <form method="post">
-                <input type="text" name="data">
-                <input type="hidden" name="nonce" value="{nonce}">
-                <button type="submit">Submit</button>
-            </form>
-        '''
-    elif request.method == 'POST':
-        data = request.form.get('data')
-        nonce = request.form.get('nonce')
-
-        if not data or not nonce:
-            return "Error: Missing data or nonce.", 400
-
-        if nonce != session.get('nonce'):
-            return "Error: Invalid nonce. Possible CSRF attack.", 403
-
-        # Process the data (e.g., store in a database)
-        # ...
-
-        # Clear the nonce after successful submission
-        session.pop('nonce', None)
-
-        return "Data submitted successfully!"
 
 if __name__ == '__main__':
-    # Never run with debug=True in production!
-    app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    app.run(debug=False, host='0.0.0.0', port=5000)
 

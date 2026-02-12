@@ -1,0 +1,94 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-07T16:43:36Z",
+  "metrics": {
+    "/tmp/tmp9agh9sz4.py": {
+      "CONFIDENCE.HIGH": 2,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 3,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 83,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 2,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 3,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 83,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "125 \n126         return render_template('index.html', buf_content=Markup(escaped_buf_content), buf1_content=Markup(escaped_buf1_content), csrf_token=session['csrf_token'])\n127 \n",
+      "col_offset": 57,
+      "end_col_offset": 84,
+      "filename": "/tmp/tmp9agh9sz4.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 79,
+        "link": "https://cwe.mitre.org/data/definitions/79.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Potential XSS with ``markupsafe.Markup`` detected. Do not use ``Markup`` on untrusted data.",
+      "line_number": 126,
+      "line_range": [
+        126
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b704_markupsafe_markup_xss.html",
+      "test_id": "B704",
+      "test_name": "markupsafe_markup_xss"
+    },
+    {
+      "code": "125 \n126         return render_template('index.html', buf_content=Markup(escaped_buf_content), buf1_content=Markup(escaped_buf1_content), csrf_token=session['csrf_token'])\n127 \n",
+      "col_offset": 99,
+      "end_col_offset": 127,
+      "filename": "/tmp/tmp9agh9sz4.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 79,
+        "link": "https://cwe.mitre.org/data/definitions/79.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Potential XSS with ``markupsafe.Markup`` detected. Do not use ``Markup`` on untrusted data.",
+      "line_number": 126,
+      "line_range": [
+        126
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b704_markupsafe_markup_xss.html",
+      "test_id": "B704",
+      "test_name": "markupsafe_markup_xss"
+    },
+    {
+      "code": "145 if __name__ == '__main__':\n146     app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))\n",
+      "col_offset": 30,
+      "end_col_offset": 39,
+      "filename": "/tmp/tmp9agh9sz4.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 605,
+        "link": "https://cwe.mitre.org/data/definitions/605.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible binding to all interfaces.",
+      "line_number": 146,
+      "line_range": [
+        146
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b104_hardcoded_bind_all_interfaces.html",
+      "test_id": "B104",
+      "test_name": "hardcoded_bind_all_interfaces"
+    }
+  ]
+}

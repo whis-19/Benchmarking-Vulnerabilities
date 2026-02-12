@@ -1,0 +1,115 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-08T00:34:32Z",
+  "metrics": {
+    "/tmp/tmp6lndkgnx.py": {
+      "CONFIDENCE.HIGH": 3,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 2,
+      "SEVERITY.LOW": 2,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 51,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 3,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 2,
+      "SEVERITY.LOW": 2,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 51,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "1 import ftplib\n2 import os\n3 import logging\n",
+      "col_offset": 0,
+      "end_col_offset": 13,
+      "filename": "/tmp/tmp6lndkgnx.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 319,
+        "link": "https://cwe.mitre.org/data/definitions/319.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "A FTP-related module is being imported.  FTP is considered insecure. Use SSH/SFTP/SCP or some other encrypted protocol.",
+      "line_number": 1,
+      "line_range": [
+        1
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/blacklists/blacklist_imports.html#b402-import-ftplib",
+      "test_id": "B402",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "15     try:\n16         ftp = ftplib.FTP(hostname)\n17         ftp.login(username, password)\n",
+      "col_offset": 14,
+      "end_col_offset": 34,
+      "filename": "/tmp/tmp6lndkgnx.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 319,
+        "link": "https://cwe.mitre.org/data/definitions/319.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "FTP-related functions are being called. FTP is considered insecure. Use SSH/SFTP/SCP or some other encrypted protocol.",
+      "line_number": 16,
+      "line_range": [
+        16
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/blacklists/blacklist_calls.html#b321-ftplib",
+      "test_id": "B321",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "56             ftp.quit()  # Always close the connection\n57         except Exception:\n58             pass  # Ignore errors during quit (connection might already be closed)\n59 \n",
+      "col_offset": 8,
+      "end_col_offset": 16,
+      "filename": "/tmp/tmp6lndkgnx.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 703,
+        "link": "https://cwe.mitre.org/data/definitions/703.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Try, Except, Pass detected.",
+      "line_number": 57,
+      "line_range": [
+        57,
+        58
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b110_try_except_pass.html",
+      "test_id": "B110",
+      "test_name": "try_except_pass"
+    },
+    {
+      "code": "64     username = 'your_ftp_username'\n65     password = 'your_ftp_password'\n66     sensitive_file = '../sensitive_data.txt'  # Example filename (will be sanitized)\n",
+      "col_offset": 15,
+      "end_col_offset": 34,
+      "filename": "/tmp/tmp6lndkgnx.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: 'your_ftp_password'",
+      "line_number": 65,
+      "line_range": [
+        65
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    }
+  ]
+}

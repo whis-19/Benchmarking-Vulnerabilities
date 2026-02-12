@@ -1,0 +1,74 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-06T21:13:26Z",
+  "metrics": {
+    "/tmp/tmp8h33xn5j.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 2,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 2,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 136,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 2,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 2,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 136,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "12 MAX_TOTAL_EXTRACTED_SIZE = 100 * 1024 * 1024  # 100 MB (adjust as needed)\n13 ALLOWED_DESTINATION = \"/tmp/unpack\"  # Or a list of allowed destinations.  Adjust as needed.\n14 \n",
+      "col_offset": 22,
+      "end_col_offset": 35,
+      "filename": "/tmp/tmp8h33xn5j.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 13,
+      "line_range": [
+        13
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "66         logging.warning(f\"Destination directory is not a subdirectory of {ALLOWED_DESTINATION}. Using a temporary directory instead.\")\n67         destination_dir = tempfile.mkdtemp(prefix=\"secure_unpack_\", dir=\"/tmp\")  # Create a secure temporary directory\n68         logging.info(f\"Using temporary directory: {destination_dir}\")\n",
+      "col_offset": 72,
+      "end_col_offset": 78,
+      "filename": "/tmp/tmp8h33xn5j.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 67,
+      "line_range": [
+        67
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    }
+  ]
+}

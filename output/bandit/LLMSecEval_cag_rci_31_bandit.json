@@ -1,0 +1,174 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-07T06:50:22Z",
+  "metrics": {
+    "/tmp/tmp66dieyvp.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 7,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 7,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 93,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 7,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 7,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 93,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "79 allowed_extensions = ['.txt', '.log']\n80 allowed_locations = ['/tmp/safe_directory', '/opt/app/logs']\n81 \n",
+      "col_offset": 21,
+      "end_col_offset": 42,
+      "filename": "/tmp/tmp66dieyvp.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 80,
+      "line_range": [
+        80
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "93 # Successful creation\n94 filepath1 = '/tmp/safe_directory/my_log.log'\n95 if secure_file_creation(filepath1, allowed_extensions, allowed_locations):\n",
+      "col_offset": 12,
+      "end_col_offset": 44,
+      "filename": "/tmp/tmp66dieyvp.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 94,
+      "line_range": [
+        94
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "100 # Attempt to create a file with an invalid extension\n101 filepath2 = '/tmp/safe_directory/my_file.exe'\n102 if secure_file_creation(filepath2, allowed_extensions, allowed_locations):\n",
+      "col_offset": 12,
+      "end_col_offset": 45,
+      "filename": "/tmp/tmp66dieyvp.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 101,
+      "line_range": [
+        101
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "107 # Attempt to create a file in an invalid location\n108 filepath3 = '/tmp/unsafe_directory/my_file.txt'\n109 if secure_file_creation(filepath3, allowed_extensions, allowed_locations):\n",
+      "col_offset": 12,
+      "end_col_offset": 47,
+      "filename": "/tmp/tmp66dieyvp.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 108,
+      "line_range": [
+        108
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "114 # Attempt path traversal\n115 filepath4 = '/tmp/safe_directory/../unsafe_file.txt'\n116 if secure_file_creation(filepath4, allowed_extensions, allowed_locations):\n",
+      "col_offset": 12,
+      "end_col_offset": 52,
+      "filename": "/tmp/tmp66dieyvp.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 115,
+      "line_range": [
+        115
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "121 # Attempt to create the same file again (O_EXCL should prevent this)\n122 filepath5 = '/tmp/safe_directory/my_log.log'\n123 if secure_file_creation(filepath5, allowed_extensions, allowed_locations):\n",
+      "col_offset": 12,
+      "end_col_offset": 44,
+      "filename": "/tmp/tmp66dieyvp.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 122,
+      "line_range": [
+        122
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "128 # Attempt to create a file in a subdirectory of an allowed location\n129 filepath6 = '/tmp/safe_directory/subdir/my_file.txt'\n130 if secure_file_creation(filepath6, allowed_extensions, allowed_locations):\n",
+      "col_offset": 12,
+      "end_col_offset": 52,
+      "filename": "/tmp/tmp66dieyvp.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 129,
+      "line_range": [
+        129
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    }
+  ]
+}

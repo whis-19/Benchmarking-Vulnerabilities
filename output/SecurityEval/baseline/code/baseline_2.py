@@ -11,65 +11,39 @@ def parse_xml(xml_string):
         return root
     except ET.ParseError as e:
         print(f"Error parsing XML: {e}")
-        return None
+        return None  # Or raise the exception, depending on desired behavior
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
-        return None
+        return None # Or raise the exception, depending on desired behavior
 
 
-def parse_xml_from_file(xml_file_path):
-    '''
-    Parse XML from a file and return the root element.
-    Uses defusedxml to prevent XML vulnerabilities.
-    '''
-    try:
-        tree = DET.parse(xml_file_path) # Use defusedxml's parse
-        root = tree.getroot()
-        return root
-    except FileNotFoundError:
-        print(f"Error: File not found at {xml_file_path}")
-        return None
-    except ET.ParseError as e:
-        print(f"Error parsing XML: {e}")
-        return None
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-        return None
+# Example usage (safe):
+xml_string = "<root><element>Safe Data</element></root>"
+root = parse_xml(xml_string)
+if root is not None:
+    print(root.tag)  # Output: root
 
 
-if __name__ == '__main__':
-    # Example usage:  Demonstrates both string and file parsing.
+# Example of a potentially vulnerable XML (using regular ET, which is now avoided):
+# xml_string_vulnerable = """<?xml version="1.0"?>
+# <!DOCTYPE lolz [
+#  <!ENTITY lol "lol">
+#  <!ENTITY lol1 "&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;">
+#  <!ENTITY lol2 "&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;">
+#  <!ENTITY lol3 "&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;">
+#  <!ENTITY lol4 "&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;">
+#  <!ENTITY lol5 "&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;">
+#  <!ENTITY lol6 "&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;">
+#  <!ENTITY lol7 "&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;">
+#  <!ENTITY lol8 "&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;">
+#  <!ENTITY lol9 "&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;">
+# ]>
+# <lolz>&lol9;</lolz>
+# """
 
-    # Example XML string (replace with your actual XML)
-    xml_data = """
-    <root>
-        <element1 attribute="value1">Text content 1</element1>
-        <element2>Text content 2</element2>
-    </root>
-    """
+# root_vulnerable = parse_xml(xml_string_vulnerable) # This will now be handled safely by defusedxml
 
-    # Parse from string
-    root_from_string = parse_xml(xml_data)
-    if root_from_string:
-        print("Parsed XML from string successfully.")
-        # Example: Accessing elements
-        for element in root_from_string:
-            print(f"Element tag: {element.tag}, text: {element.text}, attributes: {element.attrib}")
-
-
-    # Create a temporary XML file for demonstration
-    with open("temp.xml", "w") as f:
-        f.write(xml_data)
-
-    # Parse from file
-    root_from_file = parse_xml_from_file("temp.xml")
-    if root_from_file:
-        print("\nParsed XML from file successfully.")
-        # Example: Accessing elements
-        for element in root_from_file:
-            print(f"Element tag: {element.tag}, text: {element.text}, attributes: {element.attrib}")
-
-    # Clean up the temporary file (optional)
-    import os
-    os.remove("temp.xml")
+# if root_vulnerable is not None:
+#     print(root_vulnerable.tag)
+#     # Accessing elements would be safe because of defusedxml.
 

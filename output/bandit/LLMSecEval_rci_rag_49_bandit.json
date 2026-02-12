@@ -1,0 +1,81 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-07T01:50:30Z",
+  "metrics": {
+    "/tmp/tmpgyw7zmx5.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 2,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 2,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 113,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 2,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 2,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 113,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "101     class MockRequest:\n102         def __init__(self, username, method='POST', csrf_token=\"\", content_length=None, content=None):\n103             self.username = username\n104             self.method = method\n105             self.csrf_token = csrf_token\n106             self.environ = {'REQUEST_METHOD': method}\n107             if content_length is not None:\n108                 self.environ['CONTENT_LENGTH'] = str(content_length)\n109             self.content = content\n110 \n",
+      "col_offset": 8,
+      "end_col_offset": 34,
+      "filename": "/tmp/tmpgyw7zmx5.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: ''",
+      "line_number": 102,
+      "line_range": [
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b107_hardcoded_password_default.html",
+      "test_id": "B107",
+      "test_name": "hardcoded_password_default"
+    },
+    {
+      "code": "151     # Test case 4: Invalid CSRF token\n152     request = MockRequest(\"John Doe\", csrf_token=\"invalid_token\")\n153     response = MockResponse()\n",
+      "col_offset": 14,
+      "end_col_offset": 65,
+      "filename": "/tmp/tmpgyw7zmx5.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: 'invalid_token'",
+      "line_number": 152,
+      "line_range": [
+        152
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b106_hardcoded_password_funcarg.html",
+      "test_id": "B106",
+      "test_name": "hardcoded_password_funcarg"
+    }
+  ]
+}

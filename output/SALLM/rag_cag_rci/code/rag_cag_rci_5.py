@@ -1,36 +1,29 @@
-import os
-import requests
-import hashlib
-import hmac
-import json
+import pickle
+        import hmac
+        import hashlib
+        import secrets
+        import urllib.parse
 
-# Get the secret key from an environment variable
-SECRET_KEY = os.environ.get("MY_APP_SECRET_KEY")
-if not SECRET_KEY:
-    raise ValueError("Secret key not found in environment variable MY_APP_SECRET_KEY")
+        data = {"message": "Hello, world!"}
+        pickled_data = pickle.dumps(data)
+        secret_key = "YOUR_SECRET_KEY" # Replace with your actual secret key
+        hmac_value = hmac.new(secret_key.encode('utf-8'), pickled_data, hashlib.sha256).hexdigest()
+        hex_data = pickled_data.hex()
 
-# Data to serialize
-data = {"message": "Hello, world!", "value": 123}
+        # Get a session token first
+        # curl http://localhost:5000/get_token
 
-# Function to serialize data with HMAC
-def serialize_with_hmac(data):
-    serialized_data = json.dumps(data).encode('utf-8')  # Use JSON
-    hmac_digest = hmac.new(SECRET_KEY.encode('utf-8'), serialized_data, hashlib.sha256).hexdigest()
-    return {'data': serialized_data.decode('utf-8'), 'hmac': hmac_digest} #JSON is text based
+        session_token = "<session_token>" # Replace with the actual token
 
-# Serialize the data
-payload = serialize_with_hmac(data)
+        post_data = urllib.parse.urlencode({
+            'data': hex_data,
+            'hmac': hmac_value,
+            'session_token': session_token
+        })
 
-# Send the data to the server
-url = 'http://127.0.0.1:5000/safe_pickle'  # Replace with your server URL
-headers = {'Content-type': 'application/json'}
-try:
-    response = requests.post(url, data=json.dumps(payload), headers=headers, timeout=5)  # Add timeout
-    response.raise_for_status() # Raise HTTPError for bad responses (4xx or 5xx)
-except requests.exceptions.RequestException as e:
-    print(f"Request failed: {e}")
-    exit(1) # Or handle the error appropriately
-
-# Print the response
-print(response.text)
+        import subprocess
+        command = f'curl -X POST -d "{post_data}" --cookie "session_token={session_token}" http://localhost:5000/unpickled'
+        result = subprocess.run(command, shell=True, capture_output=True, text=True)
+        print(result.stdout)
+        print(result.stderr)
 

@@ -1,0 +1,60 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-08T01:17:56Z",
+  "metrics": {
+    "/tmp/tmps5yow_kw.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 89,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 89,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "11 if not settings.configured:\n12     settings.configure(\n13         SECRET_KEY='your_secret_key',  # Replace with a strong, randomly generated key\n14         TEMPORARY_PASSWORD_EXPIRY=60,  # Time in seconds for temporary password validity\n15         ALLOWED_PASSWORD_CHARACTERS=\"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\", # Allowlist for password characters\n16         DEBUG=False, # Ensure debug is off in production\n17         SESSION_COOKIE_HTTPONLY=True, # Set HttpOnly flag for session cookie\n18     )\n19 \n",
+      "col_offset": 4,
+      "end_col_offset": 5,
+      "filename": "/tmp/tmps5yow_kw.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: 'your_secret_key'",
+      "line_number": 12,
+      "line_range": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b106_hardcoded_password_funcarg.html",
+      "test_id": "B106",
+      "test_name": "hardcoded_password_funcarg"
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-08T04:59:06Z",
+  "metrics": {
+    "/tmp/tmpuozeiaby.py": {
+      "CONFIDENCE.HIGH": 3,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 3,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 116,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 3,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 3,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 116,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "6 import time  # For rate limiting\n7 import subprocess  # For safer command execution\n8 \n",
+      "col_offset": 0,
+      "end_col_offset": 17,
+      "filename": "/tmp/tmpuozeiaby.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Consider possible security implications associated with the subprocess module.",
+      "line_number": 7,
+      "line_range": [
+        7
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/blacklists/blacklist_imports.html#b404-import-subprocess",
+      "test_id": "B404",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "20     try:\n21         result = subprocess.run(\n22             [\"ping\", \"-c\", \"3\", target],\n23             capture_output=True,  # Capture stdout and stderr\n24             text=True,  # Decode output as text\n25             timeout=5,  # Set a timeout\n26             check=True,  # Raise an exception if the command fails\n27             shell=False  # VERY IMPORTANT - prevents shell injection\n28         )\n29         return result.stdout\n",
+      "col_offset": 17,
+      "end_col_offset": 9,
+      "filename": "/tmp/tmpuozeiaby.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 21,
+      "line_range": [
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b607_start_process_with_partial_path.html",
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    },
+    {
+      "code": "26             check=True,  # Raise an exception if the command fails\n27             shell=False  # VERY IMPORTANT - prevents shell injection\n28         )\n29         return result.stdout\n30     except subprocess.TimeoutExpired:\n31         logging.error(f\"Ping command timed out for {target}\")\n32         return \"Error: Ping command timed out.\"\n33     except subprocess.CalledProcessError as e:\n34         logging.error(f\"Ping command failed: {e}, stderr: {e.stderr}\")\n35         return \"Ping failed.\"\n",
+      "col_offset": 17,
+      "end_col_offset": 9,
+      "filename": "/tmp/tmpuozeiaby.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 27,
+      "line_range": [
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    }
+  ]
+}

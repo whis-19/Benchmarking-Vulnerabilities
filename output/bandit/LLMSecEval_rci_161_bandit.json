@@ -1,0 +1,134 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-06T22:54:27Z",
+  "metrics": {
+    "/tmp/tmppfq41jv4.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 5,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 5,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 48,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 5,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 5,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 48,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "9 \n10 def create_secure_config_file(filepath=\"important_config\", base_dir=\"/tmp\"):\n11     \"\"\"\n",
+      "col_offset": 68,
+      "end_col_offset": 74,
+      "filename": "/tmp/tmppfq41jv4.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 10,
+      "line_range": [
+        10
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "70 if __name__ == \"__main__\":\n71     create_secure_config_file(filepath=\"/tmp/my_config.conf\", base_dir=\"/tmp\")\n72     create_secure_config_file(filepath=\"my_config.conf\", base_dir=\"/tmp\") # Example of a valid filepath\n",
+      "col_offset": 39,
+      "end_col_offset": 60,
+      "filename": "/tmp/tmppfq41jv4.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 71,
+      "line_range": [
+        71
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "70 if __name__ == \"__main__\":\n71     create_secure_config_file(filepath=\"/tmp/my_config.conf\", base_dir=\"/tmp\")\n72     create_secure_config_file(filepath=\"my_config.conf\", base_dir=\"/tmp\") # Example of a valid filepath\n",
+      "col_offset": 71,
+      "end_col_offset": 77,
+      "filename": "/tmp/tmppfq41jv4.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 71,
+      "line_range": [
+        71
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "71     create_secure_config_file(filepath=\"/tmp/my_config.conf\", base_dir=\"/tmp\")\n72     create_secure_config_file(filepath=\"my_config.conf\", base_dir=\"/tmp\") # Example of a valid filepath\n73     create_secure_config_file(filepath=\"/etc/passwd\", base_dir=\"/tmp\") # Example of an invalid filepath\n",
+      "col_offset": 66,
+      "end_col_offset": 72,
+      "filename": "/tmp/tmppfq41jv4.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 72,
+      "line_range": [
+        72
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "72     create_secure_config_file(filepath=\"my_config.conf\", base_dir=\"/tmp\") # Example of a valid filepath\n73     create_secure_config_file(filepath=\"/etc/passwd\", base_dir=\"/tmp\") # Example of an invalid filepath\n",
+      "col_offset": 63,
+      "end_col_offset": 69,
+      "filename": "/tmp/tmppfq41jv4.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 377,
+        "link": "https://cwe.mitre.org/data/definitions/377.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Probable insecure usage of temp file/directory.",
+      "line_number": 73,
+      "line_range": [
+        73
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b108_hardcoded_tmp_directory.html",
+      "test_id": "B108",
+      "test_name": "hardcoded_tmp_directory"
+    }
+  ]
+}

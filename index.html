@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Research Team - Blockchain Vulnerability Testing and AI Research">
+    <title>Research Team - Blockchain Vulnerability Testing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Professional Light Color System */
+            --primary: hsl(218, 90%, 50%);
+            --primary-light: hsl(218, 90%, 65%);
+            --primary-dark: hsl(218, 90%, 40%);
+            --secondary: hsl(210, 60%, 45%);
+            --accent: hsl(218, 95%, 55%);
+
+            /* Light Neutral Palette */
+            --gray-50: hsl(210, 20%, 98%);
+            --gray-100: hsl(210, 17%, 95%);
+            --gray-200: hsl(210, 16%, 93%);
+            --gray-300: hsl(210, 14%, 89%);
+            --gray-400: hsl(210, 12%, 78%);
+            --gray-500: hsl(210, 10%, 65%);
+            --gray-600: hsl(210, 12%, 50%);
+            --gray-700: hsl(210, 15%, 35%);
+            --gray-800: hsl(210, 18%, 25%);
+            --gray-900: hsl(210, 20%, 15%);
+
+            /* Semantic Light Colors */
+            --bg-primary: hsl(0, 0%, 100%);
+            --bg-secondary: hsl(210, 20%, 98%);
+            --bg-elevated: hsl(0, 0%, 100%);
+            --text-primary: hsl(210, 24%, 16%);
+            --text-secondary: hsl(210, 16%, 40%);
+            --text-tertiary: hsl(210, 12%, 55%);
+            --border-subtle: hsl(210, 18%, 92%);
+            --border-medium: hsl(210, 16%, 88%);
+            --border-strong: hsl(210, 18%, 82%);
+
+            /* Light Theme Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.12), 0 10px 10px -5px rgba(0, 0, 0, 0.06);
+            --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+
+            /* Spacing System */
+            --space-xs: 0.5rem;
+            --space-sm: 0.75rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-2xl: 3rem;
+            --space-3xl: 4rem;
+
+            /* Border Radius */
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-2xl: 1.5rem;
+        }
+
+        /* Dark Theme */
+        [data-theme="dark"] {
+            --primary: hsl(218, 90%, 60%);
+            --primary-light: hsl(218, 90%, 70%);
+            --primary-dark: hsl(218, 90%, 50%);
+            --secondary: hsl(210, 20%, 70%);
+            --accent: hsl(218, 95%, 65%);
+
+            /* Dark Backgrounds */
+            --bg-primary: hsl(210, 18%, 11%);
+            --bg-secondary: hsl(210, 16%, 14%);
+            --bg-elevated: hsl(210, 15%, 16%);
+
+            /* Dark Text */
+            --text-primary: hsl(210, 20%, 98%);
+            --text-secondary: hsl(210, 12%, 75%);
+            --text-tertiary: hsl(210, 10%, 60%);
+
+            /* Dark Borders */
+            --border-subtle: hsla(210, 20%, 85%, 0.08);
+            --border-medium: hsla(210, 20%, 85%, 0.12);
+            --border-strong: hsla(210, 20%, 85%, 0.18);
+
+            /* Dark Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
+            --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-xl);
+        }
+
+        /* Typography Scale */
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 3.75rem);
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            line-height: 1.1;
+            margin-bottom: var(--space-lg);
+            color: var(--text-primary);
+            animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        h2 {
+            font-size: clamp(1.75rem, 4vw, 2.25rem);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            color: var(--text-primary);
+        }
+
+        h3 {
+            font-size: clamp(1.25rem, 3vw, 1.5rem);
+            font-weight: 600;
+            letter-spacing: -0.015em;
+            line-height: 1.3;
+            color: var(--text-primary);
+        }
+
+        h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            line-height: 1.4;
+            color: var(--text-primary);
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: fixed;
+            top: var(--space-lg);
+            right: var(--space-lg);
+            z-index: 1000;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-xl);
+            padding: var(--space-sm) var(--space-md);
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--border-strong);
+        }
+
+        .theme-toggle:active {
+            transform: translateY(0);
+        }
+
+        .theme-icon {
+            font-size: 1.125rem;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:hover .theme-icon {
+            transform: rotate(20deg);
+        }
+
+        /* Header Section */
+        header {
+            text-align: center;
+            padding: var(--space-3xl) 0 var(--space-2xl);
+            position: relative;
+        }
+
+        .subtitle {
+            font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+            color: var(--text-secondary);
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s backwards;
+        }
+
+        /* Abstract Section */
+        .abstract {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-2xl);
+            margin: var(--space-2xl) 0;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s backwards;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .abstract::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+        }
+
+        .abstract:hover {
+            border-color: var(--border-strong);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .abstract h2 {
+            margin-bottom: var(--space-lg);
+        }
+
+        .abstract p {
+            color: var(--text-secondary);
+            font-size: 1.0625rem;
+            line-height: 1.8;
+            letter-spacing: -0.005em;
+        }
+
+        /* Team Section */
+        .team-section {
+            margin: var(--space-3xl) 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: var(--space-2xl);
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -var(--space-sm);
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .team-grid {
+            display: grid;
+            gap: var(--space-xl);
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s backwards;
+        }
+
+        .team-member {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-member::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .team-member:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--border-strong);
+        }
+
+        .team-member:hover::before {
+            transform: scaleX(1);
+        }
+
+        .member-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-lg);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .member-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            flex-shrink: 0;
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.25);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .team-member:hover .member-icon {
+            transform: scale(1.05);
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.35);
+        }
+
+        .member-info h3 {
+            margin-bottom: var(--space-xs);
+            transition: color 0.3s ease;
+        }
+
+        .member-info h3 a {
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .member-info h3 a:hover {
+            color: var(--primary-light);
+        }
+
+        .member-info .role {
+            color: var(--text-tertiary);
+            font-size: 0.9375rem;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+        }
+
+        .member-content {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 0.9375rem;
+        }
+
+        .member-content h4 {
+            color: var(--text-primary);
+            margin-top: var(--space-lg);
+            margin-bottom: var(--space-md);
+            font-size: 1.0625rem;
+            position: relative;
+            padding-left: var(--space-sm);
+        }
+
+        .member-content h4::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 60%;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .member-content ul {
+            list-style: none;
+            padding-left: 0;
+            margin: var(--space-md) 0;
+        }
+
+        .member-content li {
+            padding: var(--space-xs) 0 var(--space-xs) var(--space-lg);
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .member-content li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.85rem;
+            width: 6px;
+            height: 6px;
+            background: var(--primary);
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .member-content li:hover::before {
+            transform: scale(1.3);
+        }
+
+        .member-content a {
+            color: var(--primary-light);
+            text-decoration: none;
+            position: relative;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .member-content a::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--primary-light);
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .member-content a:hover {
+            color: var(--primary);
+        }
+
+        .member-content a:hover::after {
+            width: 100%;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, hsla(218, 85%, 55%, 0.08), hsla(218, 100%, 60%, 0.12));
+            padding: var(--space-lg);
+            border-radius: var(--radius-lg);
+            border-left: 3px solid var(--primary);
+            margin: var(--space-lg) 0;
+            transition: all 0.3s ease;
+        }
+
+        .highlight:hover {
+            background: linear-gradient(135deg, hsla(218, 85%, 55%, 0.12), hsla(218, 100%, 60%, 0.16));
+            border-left-width: 4px;
+        }
+
+        .highlight p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .container {
+                padding: var(--space-lg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--space-md);
+            }
+
+            header {
+                padding: var(--space-2xl) 0 var(--space-xl);
+            }
+
+            .abstract,
+            .team-member {
+                padding: var(--space-lg);
+            }
+
+            .member-header {
+                flex-direction: column;
+                text-align: center;
+                align-items: center;
+                gap: var(--space-md);
+            }
+
+            .member-icon {
+                width: 64px;
+                height: 64px;
+                font-size: 1.375rem;
+            }
+
+            .member-info {
+                width: 100%;
+            }
+
+            .section-title::after {
+                bottom: -var(--space-xs);
+            }
+
+            .theme-toggle {
+                top: var(--space-md);
+                right: var(--space-md);
+                padding: var(--space-xs) var(--space-sm);
+                font-size: 0.8125rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: var(--space-sm);
+            }
+
+            header {
+                padding: var(--space-xl) 0 var(--space-lg);
+            }
+
+            .abstract,
+            .team-member {
+                padding: var(--space-md);
+                border-radius: var(--radius-lg);
+            }
+
+            .member-icon {
+                width: 56px;
+                height: 56px;
+                font-size: 1.25rem;
+            }
+
+            .member-content h4 {
+                font-size: 1rem;
+            }
+
+            .member-content li {
+                padding: var(--space-xs) 0 var(--space-xs) var(--space-md);
+                font-size: 0.875rem;
+            }
+
+            .highlight {
+                padding: var(--space-md);
+                margin: var(--space-md) 0;
+            }
+
+            .team-grid {
+                gap: var(--space-lg);
+            }
+
+            .theme-toggle {
+                top: var(--space-sm);
+                right: var(--space-sm);
+                padding: var(--space-xs);
+                gap: 0.25rem;
+            }
+
+            .theme-toggle span:last-child {
+                display: none;
+            }
+
+            .theme-icon {
+                font-size: 1.25rem;
+            }
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: var(--space-2xl) 0;
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            letter-spacing: 0.025em;
+            border-top: 1px solid var(--border-subtle);
+            margin-top: var(--space-3xl);
+        }
+
+        /* Utility Classes */
+        .text-balance {
+            text-wrap: balance;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+
+            .team-member,
+            .abstract {
+                break-inside: avoid;
+                border: 1px solid #ddd;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <span class="theme-icon" id="themeIcon">🌞</span>
+        <span id="themeText">Light</span>
+    </button>
+
+    <div class="container">
+        <header>
+            <h1>Research Team</h1>
+            <p class="subtitle">Advancing Software Security & AI Research</p>
+        </header>
+
+        <!-- Abstract Section -->
+        <section class="abstract">
+            <h2>Research Focus: Secure Code Generation</h2>
+            <p>
+                Our research team is pioneering innovative approaches to automated secure code generation through
+                advanced AI-driven methodologies.
+                We leverage state-of-the-art techniques, including Large Language Models (LLMs) and Retrieval-Augmented
+                Generation (RAG),
+                to automatically generate secure, vulnerability-free code that adheres to software security best
+                practices.
+                Our work combines cutting-edge software engineering principles with machine learning to enhance software
+                security from the ground up,
+                ensuring that generated code is resilient against common security threats. The team focuses on
+                developing intelligent code generation
+                systems that can detect and prevent Common Weakness Enumerations (CWEs) during the code creation
+                process, providing
+                context-aware security analysis and producing production-ready, secure code across multiple programming
+                languages and frameworks.
+            </p>
+        </section>
+
+        <!-- Team Members Section -->
+        <section class="team-section">
+            <h2 class="section-title">Meet Our Team</h2>
+
+            <div class="team-grid">
+                <!-- Dr. Sajid Anwer -->
+                <div class="team-member">
+                    <div class="member-header">
+                        <div class="member-icon">SA</div>
+                        <div class="member-info">
+                            <h3><a href="https://scholar.google.com/citations?user=QRqlrrYAAAAJ&hl=en&oi=ao"
+                                    target="_blank" rel="noopener">Dr. Sajid Anwer</a></h3>
+                            <p class="role">Principal Investigator | Assistant Professor</p>
+                        </div>
+                    </div>
+                    <div class="member-content">
+                        <h4>Education</h4>
+                        <ul>
+                            <li>PhD, <a href="https://www.griffith.edu.au/" target="_blank" rel="noopener">Griffith
+                                    University</a>, Brisbane, Australia, 2021</li>
+                            <li>MS Computer Science, <a href="https://www.kfupm.edu.sa/" target="_blank"
+                                    rel="noopener">King Fahd University of Petroleum and Minerals</a>, Saudi Arabia,
+                                2015</li>
+                        </ul>
+
+                        <h4>Research Interests</h4>
+                        <ul>
+                            <li>Software Engineering & Requirements Engineering</li>
+                            <li>Software Security & Blockchain Technology</li>
+                            <li>Global Software Development</li>
+                        </ul>
+
+                        <h4>Experience</h4>
+                        <ul>
+                            <li>Assistant Professor, <a href="https://www.psau.edu.sa/" target="_blank"
+                                    rel="noopener">Prince Sattam Bin Abdulaziz University</a>, Saudi Arabia (September
+                                2024 - Present)</li>
+                            <li>Assistant Professor, <a href="https://www.nu.edu.pk/" target="_blank"
+                                    rel="noopener">National University of Computer and Emerging Sciences (FAST
+                                    NUCES)</a>, Islamabad, Pakistan (January 2022 - September 2024)</li>
+                            <li>Lecturer, <a href="https://www.kfupm.edu.sa/" target="_blank" rel="noopener">King Fahd
+                                    University of Petroleum and Minerals</a>, Saudi Arabia (August 2016 - January 2018)
+                            </li>
+                            <li>Lecturer, <a href="https://www.nu.edu.pk/" target="_blank" rel="noopener">FAST
+                                    NUCES</a>, Islamabad, Pakistan (August 2015 - August 2016)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Muhammad Hashim Ali -->
+                <div class="team-member">
+                    <div class="member-header">
+                        <div class="member-icon">MH</div>
+                        <div class="member-info">
+                            <h3>Muhammad Hashim Ali</h3>
+                            <p class="role">Research Assistant | Final Year Student</p>
+                        </div>
+                    </div>
+                    <div class="member-content">
+                        <h4>Academic Affiliation</h4>
+                        <ul>
+                            <li>Final Year Student, <a href="https://www.nu.edu.pk/" target="_blank" rel="noopener">FAST
+                                    National University of Computer and Emerging Sciences</a></li>
+                        </ul>
+
+                        <h4>Current Research Projects</h4>
+                        <div class="highlight">
+                            <p>
+                                <strong>Secure Code Generation Research:</strong> Muhammad Hashim is a key member of the
+                                team working on
+                                AI-driven secure code generation, focusing on developing LLM-based systems that produce
+                                vulnerability-free code.
+                            </p>
+                        </div>
+
+                        <div class="highlight">
+                            <p>
+                                <strong>Blockchain Vulnerability Testing (Separate Project):</strong> Muhammad Hashim is
+                                also working with
+                                <a href="https://www.researchgate.net/profile/Affan-Rauf" target="_blank"
+                                    rel="noopener">Dr. Affan Rauf</a> on a
+                                separate research project
+                                focused on <strong>Blockchain Vulnerability Testing</strong>, developing methodologies
+                                to identify and classify
+                                security weaknesses in smart contracts and blockchain applications.
+                            </p>
+                        </div>
+
+                        <h4>Areas of Interest</h4>
+                        <ul>
+                            <li>Secure Code Generation & LLM-based Development</li>
+                            <li>Blockchain Security & Smart Contract Analysis</li>
+                            <li>Automated Vulnerability Detection</li>
+                            <li>Software Security Best Practices</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Muhammad Abdullah -->
+                <div class="team-member">
+                    <div class="member-header">
+                        <div class="member-icon">MA</div>
+                        <div class="member-info">
+                            <h3>Muhammad Abdullah</h3>
+                            <p class="role">Research Assistant | Final Year Student</p>
+                        </div>
+                    </div>
+                    <div class="member-content">
+                        <h4>Academic Affiliation</h4>
+                        <ul>
+                            <li>Final Year Student, <a href="https://www.nu.edu.pk/" target="_blank" rel="noopener">FAST
+                                    National University of Computer and Emerging Sciences</a></li>
+                        </ul>
+
+                        <h4>Current Research Projects</h4>
+                        <div class="highlight">
+                            <p>
+                                <strong>Secure Code Generation Research:</strong> Muhammad Abdullah is a core member of
+                                the team developing
+                                AI-powered secure code generation systems, contributing to LLM-based approaches for
+                                producing secure, production-ready code.
+                            </p>
+                        </div>
+
+                        <h4>Additional Research Collaborations</h4>
+                        <ul>
+                            <li>Biomarkers Research with <a
+                                    href="https://scholar.google.com/citations?user=unGWVYMAAAAJ&hl=en" target="_blank"
+                                    rel="noopener">Dr. Muhammad Usama</a></li>
+                            <li>Caption Generation for Hyperspectral Imaging (HSI) with <a
+                                    href="https://scholar.google.com/citations?user=unGWVYMAAAAJ&hl=en" target="_blank"
+                                    rel="noopener">Dr. Muhammad Usama</a></li>
+                            <li>RUST Disease Classification with <a
+                                    href="https://scholar.google.com/citations?user=BVBJ06QAAAAJ&hl=en" target="_blank"
+                                    rel="noopener">Dr. Ali Zia</a></li>
+                            <li>fMRI Analysis & Bird Sound Classification with <a
+                                    href="https://scholar.google.com/citations?user=_pblOBEAAAAJ&hl=en" target="_blank"
+                                    rel="noopener">Dr. Shah Nawaz</a></li>
+                        </ul>
+
+                        <h4>Publications</h4>
+                        <div class="highlight">
+                            <p>
+                                <strong>Recent Achievement:</strong> As an undergraduate final year student, Muhammad
+                                Abdullah's paper
+                                <em>"Quran_ILM: An Empirical Study of LLM and RAG Architectures for Quranic Question
+                                    Answering"</em>
+                                has been accepted at the <a href="https://icit.nu.edu.pk/" target="_blank"
+                                    rel="noopener">International Conference
+                                    on Information Technology (ICIT)</a>, demonstrating exceptional research
+                                capabilities and passion for
+                                advancing AI and NLP technologies.
+                            </p>
+                        </div>
+
+                        <h4>Research Interests</h4>
+                        <ul>
+                            <li>Natural Language Processing & Large Language Models</li>
+                            <li>Retrieval-Augmented Generation (RAG)</li>
+                            <li>Computer Vision & Hyperspectral Imaging</li>
+                            <li>Medical Image Analysis & Biomarkers</li>
+                            <li>Neuroimaging & fMRI Analysis</li>
+                            <li>Bioacoustics & Audio Classification</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; 2026 Research Team | Software Security & AI Research</p>
+        </footer>
+    </div>
+
+    <script>
+        // Theme Toggle Functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const themeText = document.getElementById('themeText');
+        const html = document.documentElement;
+
+        // Check for saved theme preference or default to light mode
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', currentTheme);
+        updateThemeButton(currentTheme);
+
+        // Theme toggle event listener
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeButton(newTheme);
+        });
+
+        // Update button appearance
+        function updateThemeButton(theme) {
+            if (theme === 'dark') {
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Dark';
+            } else {
+                themeIcon.textContent = '🌞';
+                themeText.textContent = 'Light';
+            }
+        }
+    </script>
+</body>
+
+</html>

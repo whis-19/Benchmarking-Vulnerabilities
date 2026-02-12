@@ -1,0 +1,94 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-06T19:55:31Z",
+  "metrics": {
+    "/tmp/tmpy3p_mx4i.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 3,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 3,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 215,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 3,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 3,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 215,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "291     new_username = \"newuser\"\n292     new_password = \"StrongPassword123!\"\n293     if create_user(new_username, new_password):\n",
+      "col_offset": 19,
+      "end_col_offset": 39,
+      "filename": "/tmp/tmpy3p_mx4i.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: 'StrongPassword123!'",
+      "line_number": 292,
+      "line_range": [
+        292
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    },
+    {
+      "code": "299     username_to_verify = \"newuser\"\n300     password_to_verify = \"StrongPassword123!\"\n301     if verify_password(username_to_verify, password_to_verify):\n",
+      "col_offset": 25,
+      "end_col_offset": 45,
+      "filename": "/tmp/tmpy3p_mx4i.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: 'StrongPassword123!'",
+      "line_number": 300,
+      "line_range": [
+        300
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    },
+    {
+      "code": "307     first_login_username = \"firstuser\"\n308     new_strong_password = \"EvenStrongerPassword456!\"\n309     # Assuming 'firstuser' exists with a default password\n",
+      "col_offset": 26,
+      "end_col_offset": 52,
+      "filename": "/tmp/tmpy3p_mx4i.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: 'EvenStrongerPassword456!'",
+      "line_number": 308,
+      "line_range": [
+        308
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    }
+  ]
+}

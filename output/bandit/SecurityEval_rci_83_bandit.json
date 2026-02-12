@@ -1,0 +1,134 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-08T02:45:37Z",
+  "metrics": {
+    "/tmp/tmp07yuxk2a.py": {
+      "CONFIDENCE.HIGH": 3,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 2,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 1,
+      "SEVERITY.LOW": 3,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 208,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 3,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 2,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 1,
+      "SEVERITY.LOW": 3,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 208,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "16 from flask_limiter.util import get_remote_address\n17 import subprocess  # For ClamAV integration\n18 import uuid  # For generating unique filenames\n",
+      "col_offset": 0,
+      "end_col_offset": 17,
+      "filename": "/tmp/tmp07yuxk2a.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Consider possible security implications associated with the subprocess module.",
+      "line_number": 17,
+      "line_range": [
+        17
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/blacklists/blacklist_imports.html#b404-import-subprocess",
+      "test_id": "B404",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "269         # Run ClamAV scan (make sure ClamAV is installed and in the PATH)\n270         result = subprocess.run(['clamscan', '--no-summary', '--infected', '-'], input=file_content, capture_output=True, text=True)\n271         # result = subprocess.run(['clamscan', '--no-summary', '--infected', filepath], capture_output=True, text=True)\n",
+      "col_offset": 17,
+      "end_col_offset": 132,
+      "filename": "/tmp/tmp07yuxk2a.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 270,
+      "line_range": [
+        270
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b607_start_process_with_partial_path.html",
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    },
+    {
+      "code": "269         # Run ClamAV scan (make sure ClamAV is installed and in the PATH)\n270         result = subprocess.run(['clamscan', '--no-summary', '--infected', '-'], input=file_content, capture_output=True, text=True)\n271         # result = subprocess.run(['clamscan', '--no-summary', '--infected', filepath], capture_output=True, text=True)\n",
+      "col_offset": 17,
+      "end_col_offset": 132,
+      "filename": "/tmp/tmp07yuxk2a.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 270,
+      "line_range": [
+        270
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "308     # Consider using a production WSGI server like Gunicorn or uWSGI\n309     app.run(debug=True, host=\"0.0.0.0\", port=5000)\n",
+      "col_offset": 4,
+      "end_col_offset": 50,
+      "filename": "/tmp/tmp07yuxk2a.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 94,
+        "link": "https://cwe.mitre.org/data/definitions/94.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.",
+      "line_number": 309,
+      "line_range": [
+        309
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b201_flask_debug_true.html",
+      "test_id": "B201",
+      "test_name": "flask_debug_true"
+    },
+    {
+      "code": "308     # Consider using a production WSGI server like Gunicorn or uWSGI\n309     app.run(debug=True, host=\"0.0.0.0\", port=5000)\n",
+      "col_offset": 29,
+      "end_col_offset": 38,
+      "filename": "/tmp/tmp07yuxk2a.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 605,
+        "link": "https://cwe.mitre.org/data/definitions/605.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible binding to all interfaces.",
+      "line_number": 309,
+      "line_range": [
+        309
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b104_hardcoded_bind_all_interfaces.html",
+      "test_id": "B104",
+      "test_name": "hardcoded_bind_all_interfaces"
+    }
+  ]
+}

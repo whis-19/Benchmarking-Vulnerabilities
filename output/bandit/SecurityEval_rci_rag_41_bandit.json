@@ -1,0 +1,78 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-08T04:02:18Z",
+  "metrics": {
+    "/tmp/tmpli4qndis.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 1,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 254,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 1,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 254,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "208 \n209             create_view_query = f\"\"\"\n210             CREATE OR REPLACE VIEW {escaped_database_name}.{connection.MySQLConnection.converter.escape(view_name, encoding=connection_obj.charset)} AS\n211             SELECT * FROM {escaped_database_name}.{escaped_table_name}\n212             WHERE {escaped_user_id_column} = %s\n213             \"\"\"\n214             cursor.execute(create_view_query, (user_id,))\n",
+      "col_offset": 32,
+      "end_col_offset": 15,
+      "filename": "/tmp/tmpli4qndis.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 209,
+      "line_range": [
+        209,
+        210,
+        211,
+        212,
+        213
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "297     new_username = \"limited_user\"\n298     new_password = \"secure_password\"  # Replace with a strong, unique password\n299     database_name = DB_NAME  # Replace with your database name\n",
+      "col_offset": 19,
+      "end_col_offset": 36,
+      "filename": "/tmp/tmpli4qndis.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: 'secure_password'",
+      "line_number": 298,
+      "line_range": [
+        298
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    }
+  ]
+}

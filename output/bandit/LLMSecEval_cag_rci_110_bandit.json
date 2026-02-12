@@ -1,0 +1,108 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-07T08:40:26Z",
+  "metrics": {
+    "/tmp/tmpwye52lbk.py": {
+      "CONFIDENCE.HIGH": 3,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 3,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 115,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 3,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 3,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 115,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "1 import shlex\n2 import subprocess\n3 import re\n",
+      "col_offset": 0,
+      "end_col_offset": 17,
+      "filename": "/tmp/tmpwye52lbk.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Consider possible security implications associated with the subprocess module.",
+      "line_number": 2,
+      "line_range": [
+        2
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/blacklists/blacklist_imports.html#b404-import-subprocess",
+      "test_id": "B404",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "98     try:\n99         result = subprocess.run(\n100             [\"ping\", \"-c\", \"1\", sanitized_hostname],\n101             capture_output=True,  # Capture output for logging/analysis\n102             text=True,           # Decode output as text\n103             timeout=10,          # Prevent indefinite hanging\n104             check=True,          # Raise an exception on non-zero exit code\n105             shell=False          # VERY IMPORTANT: Disable shell interpretation\n106         )\n107 \n",
+      "col_offset": 17,
+      "end_col_offset": 9,
+      "filename": "/tmp/tmpwye52lbk.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 99,
+      "line_range": [
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b607_start_process_with_partial_path.html",
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    },
+    {
+      "code": "104             check=True,          # Raise an exception on non-zero exit code\n105             shell=False          # VERY IMPORTANT: Disable shell interpretation\n106         )\n107 \n108         print(f\"Ping output: {result.stdout}\")\n109         # Log successful ping\n110         log_message = f\"User: {user_id}, Hostname: {hostname}, IP: (resolved IP), Result: Success\" # Add resolved IP\n111         print(log_message) # Replace with proper logging\n112 \n113         return result.stdout\n",
+      "col_offset": 17,
+      "end_col_offset": 9,
+      "filename": "/tmp/tmpwye52lbk.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 105,
+      "line_range": [
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    }
+  ]
+}

@@ -1,0 +1,281 @@
+{
+  "errors": [],
+  "generated_at": "2026-02-07T02:39:28Z",
+  "metrics": {
+    "/tmp/tmp9xl0g5hw.py": {
+      "CONFIDENCE.HIGH": 12,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 12,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 268,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 12,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 12,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 268,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "5 from werkzeug.utils import secure_filename\n6 import subprocess\n7 import shutil\n",
+      "col_offset": 0,
+      "end_col_offset": 17,
+      "filename": "/tmp/tmp9xl0g5hw.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Consider possible security implications associated with the subprocess module.",
+      "line_number": 6,
+      "line_range": [
+        6
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/blacklists/blacklist_imports.html#b404-import-subprocess",
+      "test_id": "B404",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "49             # Create the group first\n50             subprocess.run(['groupadd', USER_NAME], check=True, capture_output=True)\n51             logging.info(f\"Group {USER_NAME} created.\")\n",
+      "col_offset": 12,
+      "end_col_offset": 84,
+      "filename": "/tmp/tmp9xl0g5hw.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 50,
+      "line_range": [
+        50
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b607_start_process_with_partial_path.html",
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    },
+    {
+      "code": "49             # Create the group first\n50             subprocess.run(['groupadd', USER_NAME], check=True, capture_output=True)\n51             logging.info(f\"Group {USER_NAME} created.\")\n",
+      "col_offset": 12,
+      "end_col_offset": 84,
+      "filename": "/tmp/tmp9xl0g5hw.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 50,
+      "line_range": [
+        50
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "57             # Create the user, adding them to the group\n58             subprocess.run(['useradd', '-m', '-g', USER_NAME, USER_NAME], check=True, capture_output=True)\n59             logging.info(f\"User {USER_NAME} created.\")\n",
+      "col_offset": 12,
+      "end_col_offset": 106,
+      "filename": "/tmp/tmp9xl0g5hw.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 58,
+      "line_range": [
+        58
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b607_start_process_with_partial_path.html",
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    },
+    {
+      "code": "57             # Create the user, adding them to the group\n58             subprocess.run(['useradd', '-m', '-g', USER_NAME, USER_NAME], check=True, capture_output=True)\n59             logging.info(f\"User {USER_NAME} created.\")\n",
+      "col_offset": 12,
+      "end_col_offset": 106,
+      "filename": "/tmp/tmp9xl0g5hw.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 58,
+      "line_range": [
+        58
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "63             try:\n64                 subprocess.run(['groupdel', USER_NAME], check=True, capture_output=True)\n65             except subprocess.CalledProcessError as e2:\n",
+      "col_offset": 16,
+      "end_col_offset": 88,
+      "filename": "/tmp/tmp9xl0g5hw.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 64,
+      "line_range": [
+        64
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b607_start_process_with_partial_path.html",
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    },
+    {
+      "code": "63             try:\n64                 subprocess.run(['groupdel', USER_NAME], check=True, capture_output=True)\n65             except subprocess.CalledProcessError as e2:\n",
+      "col_offset": 16,
+      "end_col_offset": 88,
+      "filename": "/tmp/tmp9xl0g5hw.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 64,
+      "line_range": [
+        64
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "253         # This is a simplified example; a more robust solution would use capabilities.\n254         subprocess.run(['chmod', '500', chroot_sandbox_dir], check=True) # r-x for owner, --- for others\n255         subprocess.run(['chmod', '777', os.path.join(chroot_sandbox_dir, 'tmp')], check=True) # Full access to /tmp\n",
+      "col_offset": 8,
+      "end_col_offset": 72,
+      "filename": "/tmp/tmp9xl0g5hw.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 254,
+      "line_range": [
+        254
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b607_start_process_with_partial_path.html",
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    },
+    {
+      "code": "253         # This is a simplified example; a more robust solution would use capabilities.\n254         subprocess.run(['chmod', '500', chroot_sandbox_dir], check=True) # r-x for owner, --- for others\n255         subprocess.run(['chmod', '777', os.path.join(chroot_sandbox_dir, 'tmp')], check=True) # Full access to /tmp\n",
+      "col_offset": 8,
+      "end_col_offset": 72,
+      "filename": "/tmp/tmp9xl0g5hw.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 254,
+      "line_range": [
+        254
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "254         subprocess.run(['chmod', '500', chroot_sandbox_dir], check=True) # r-x for owner, --- for others\n255         subprocess.run(['chmod', '777', os.path.join(chroot_sandbox_dir, 'tmp')], check=True) # Full access to /tmp\n256 \n",
+      "col_offset": 8,
+      "end_col_offset": 93,
+      "filename": "/tmp/tmp9xl0g5hw.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 255,
+      "line_range": [
+        255
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b607_start_process_with_partial_path.html",
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    },
+    {
+      "code": "254         subprocess.run(['chmod', '500', chroot_sandbox_dir], check=True) # r-x for owner, --- for others\n255         subprocess.run(['chmod', '777', os.path.join(chroot_sandbox_dir, 'tmp')], check=True) # Full access to /tmp\n256 \n",
+      "col_offset": 8,
+      "end_col_offset": 93,
+      "filename": "/tmp/tmp9xl0g5hw.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 255,
+      "line_range": [
+        255
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "262         # Execute the command as the sandboxed user\n263         process = subprocess.Popen(\n264             command,\n265             stdin=subprocess.PIPE,\n266             stdout=subprocess.PIPE,\n267             stderr=subprocess.PIPE,\n268             cwd='/',  # Set working directory inside the chroot\n269             preexec_fn=limit_resources  # Apply resource limits before execution\n270         )\n271 \n",
+      "col_offset": 18,
+      "end_col_offset": 9,
+      "filename": "/tmp/tmp9xl0g5hw.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 263,
+      "line_range": [
+        263,
+        264,
+        265,
+        266,
+        267,
+        268,
+        269,
+        270
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.3/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    }
+  ]
+}
